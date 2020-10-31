@@ -1,5 +1,9 @@
 # MODEL
 	# NODE COORDENATES
+	#Caracteristicas basicas del modelo
+	set ::vano 5000.0;
+	set ::altura 3000.0;
+	set ::nodo_cont 3; #Defino el nodo control
 		source "Nodes.tcl"; 
 		# Display: Number of nodes
 		set Nudos [getNodeTags]
@@ -16,7 +20,7 @@
 			
 	# ELEMENTS:
 		# Beam elements
-		set numIntgrPts 5
+		set numIntgrPts 5;
 		source "FrameElem.tcl";
 		
 		# zerolength Elementoselement 	(activate either material spring or material spring)	

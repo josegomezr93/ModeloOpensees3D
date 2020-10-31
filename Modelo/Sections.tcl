@@ -2,7 +2,6 @@
 	# Constantes que definen las secciones
 	set Sv1 40001; #IPE220 - viga
 	set ASv1 33.4e2; #Area de la seccion IPE220
-	set I0Sv1 [expr 1/12.0*$bSv1*$hSv1*($bSv1**2.0+$hSv1**2.0)]
 	set ItSv1 9.07e4; #It inercia torsional
 	set IySv1 205e4; #Iyy inercia menor
 	set IzSv1 2772e4; #Izz inercia mayor
@@ -25,15 +24,15 @@
 	set halma	[expr $h-2*$ala]
 	
 	#Calculo ejes referencias
-	set z1 [expr -$h/2]
-	set z2 [expr -$halma/2]
-	set z3 [expr  $halma/2]
-	set z4 [expr  $h/2]
+	set y1 [expr -$h/2]
+	set y2 [expr -$halma/2]
+	set y3 [expr  $halma/2]
+	set y4 [expr  $h/2]
 
-	set y1 [expr -$b/2]
-	set y2 [expr -$alma/2]
-	set y3 [expr  $alma/2]
-	set y4 [expr  $b/2]
+	set z1 [expr -$b/2]
+	set z2 [expr -$alma/2]
+	set z3 [expr  $alma/2]
+	set z4 [expr  $b/2]
 
 # DEFINIR EL NÚMERO DE FIBRAS EN CADA DIRECCIÓN
 	set n_h_alma	4;			# Número de fibras a lo largo del alto del alma
@@ -46,11 +45,12 @@
 	 section Fiber	 	  1 	{    
 	#				   	    [y,x Inf-izda] [y,x Inf-dcha] [y,x Sup-dcha] [y,x Sup-izda]
 	#patch rect $matTag 	$numSubdivY $numSubdivZ   $yI  $zI    	   $yJ  $zJ       $yK  $zK       $yL  $zL 
-	 patch quadr  	1 	$n_h_ala	$n_b_ala	  $z1  $y4		   $z1  $y1       $z2  $y1       $z2  $y4; 	
-	 patch quadr  	1 		$n_h_alma	$n_b_alma	  $z2  $y3		   $z2  $y2       $z3  $y2       $z3  $y3;
-	 patch quadr  	1 		$n_h_ala	$n_b_ala	  $z3  $y4		   $z3  $y1       $z4  $y1       $z4  $y4;	 						
+	 patch quadr  	1 	$n_h_ala	$n_b_ala	  $y1  $z4		   $y1  $z1       $y2  $z1       $y2  $z4; 	
+	 patch quadr  	1 		$n_h_alma	$n_b_alma	  $y2  $z3		   $y2  $z2       $y3  $z2       $y3  $z3;
+	 patch quadr  	1 		$n_h_ala	$n_b_ala	  $y3  $z4		   $y3  $z1       $y4  $z1       $y4  $z4;	 						
 	}
 
+#
 	# uniaxialMaterial Elastic [expr $Sv1-790] [expr $Gc*$ASv1*5.0/6.0]; #Rigideces de cortantes z e y
 	# uniaxialMaterial Elastic [expr $Sv1-780] [expr $Gc*$ItSv1]; #Rigidez de torsion
 	# section Aggregator $Sv1 [expr $Sv1-790] Vz [expr $Sv1-790] Vy [expr $Sv1-780] T -section [expr $Sv1-770] 
@@ -105,14 +105,14 @@
 	# uniaxialMaterial Elastic [expr $Sv3-780] [expr $Gc*$ItSv3]; #Rigidez de torsion
 	# section Aggregator $Sv3 [expr $Sv3-790] Vz [expr $Sv3-790] Vy [expr $Sv3-780] T -section [expr $Sv3-770] 
 
-
+# Transformadas geometricas
 	# Orientación de las vigas y columnas (Matriz de transformación)-----> Fuera del FOR -> Evita conflictos cuando nproc < nº de cálculos
 	set Trx 1; # Nombre de la dirección de las vigas en X
 	set Try 2; # Nombre de la dirección de las vigas en Y
 	set Trz 3; # Nombre de la dirección de las vigas en Z
 	# geomTransf Linear $transfTag $vecxzX $vecxzY $vecxzZ <-jntOffset $dXi $dYi $dZi $dXj $dYj $dZj>
-	geomTransf Linear $Trx 0 0 1; # z local en Zglobal
-	geomTransf Linear $Try 0 0 1; # z local en Zglobal
-	geomTransf Linear $Trz -1 0 0; # z local en -Xglobal
+	geomTransf Linear $Trz 0 0 1; # z local en Zglobal --> vigas
+	geomTransf Linear $Try 0 -1 0; # z local en -Yglobal --> pilares
+	geomTransf PDelta $Trx -1 0 0; # z local en -Xglobal para los cualquier vaina jajajaj
 		
 	# geomTransf PDelta o Linear

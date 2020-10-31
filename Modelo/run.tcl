@@ -6,7 +6,7 @@
 	
 # BACKUP MODEL
 	file mkdir $SimulationName/Model
-	file copy -force "0.-Principal.tcl" $SimulationName/Model 
+	file copy -force "run.tcl" $SimulationName/Model 
 	file copy -force "Materials.tcl" $SimulationName/Model 
 	file copy -force "Sections.tcl" $SimulationName/Model
 	file copy -force "Model.tcl" $SimulationName/Model 	
