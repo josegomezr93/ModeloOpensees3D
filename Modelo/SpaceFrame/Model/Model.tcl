@@ -47,10 +47,10 @@
 		# set EleNudos [eleNodes $ElemX]
 		# puts "Nudos del elemento $ElemX: $EleNudos"
 		
-		#zerolength Elementoselement 	(activate either material spring or material spring)	
-			element zeroLength  13 10 14 -mat 2 -dir 5; mat=1 linear mat=2 nolinear spring (material spring)
+		# zerolength Elementoselement 	(activate either material spring or material spring)	
+			# element zeroLength  13 10 14 -mat 2 -dir 5; mat=1 linear mat=2 nolinear spring (material spring)
 
-			element zeroLengthSection 13 10 14 3002; #(Section spring) 			
+			# element zeroLengthSection 13 10 14 3002; #(Section spring) 			
 		
 		# Display: Number of elements
 		# set Elem [getEleTags]

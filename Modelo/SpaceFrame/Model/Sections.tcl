@@ -42,7 +42,7 @@
 
 # DEFINIR LAS FIBRAS DE LA SECCIÓN DE HORMIGÓN
 	#section Fiber 		$secTag
-	 section Fiber	 	 $Sv2 	 {
+	 section Fiber	 	 $Sv2 	-GJ 0 {
 		 patch quadr  	$::Acero 	$n_b_ala	$n_h_ala	  $y1  $z1		   $y4  $z1       $y4  $z2       $y1  $z2; 	
 		 patch quadr  	$::Acero 		$n_b_alma	$n_h_alma	  $y2  $z2		   $y3  $z2       $y3  $z3       $y2  $z3;
 		 patch quadr  	$::Acero 		$n_b_ala	$n_h_ala	  $y1  $z3		   $y4  $z3       $y4  $z4       $y1  $z4;	 						
