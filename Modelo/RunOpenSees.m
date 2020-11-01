@@ -98,5 +98,3 @@ diary off;                          % Cerramos el diario
 % xlabel('\it Desplazamientos (mm))')
 % ylabel('\it Cortante (N)')
 % 
-
-
