@@ -11,7 +11,7 @@
 	set Gs [expr $Es/(2*($nus+1.0))]; # Shear modulus acero [N/mm^2]
 	
 	
-	uniaxialMaterial Steel02 $::Acero $fy $Es 0.0003 18.5 0.925 0.15 ;
+	uniaxialMaterial Steel02     $::Acero   $fy $Es  0.0003 18.5 0.925 0.15 ;
 	
 	# Material elástico del muelle
 	# uniaxialMaterial Elastic 1 80000

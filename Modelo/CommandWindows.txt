@@ -1,0 +1,32 @@
+Ejecutando OpenSees...
+Fecha de inicio: 31/10/2020
+Hora de inicio: 15:42
+ 
+ 
+         OpenSees -- Open System For Earthquake Engineering Simulation 
+                 Pacific Earthquake Engineering Research Center 
+                        Version 3.2.2 64-Bit 
+ 
+      (c) Copyright 1999-2016 The Regents of the University of California 
+                              All Rights Reserved 
+  (Copyright and Disclaimer @ http://www.berkeley.edu/OpenSees/copyright.html) 
+ 
+ 
+Cargando nodos 
+N de Nudos: 28 
+Nodos OK 
+Cargando elementos 
+ForceBeamColumn3d::update() -- could not invert flexibility 
+ForceBeamColumn3d::update() -- could not invert flexibility 
+ForceBeamColumn3d::update() -- could not invert flexibility 
+ForceBeamColumn3d::update() -- could not invert flexibility 
+ForceBeamColumn3d::update() -- could not invert flexibility 
+ForceBeamColumn3d::update() -- could not invert flexibility 
+ForceBeamColumn3d::update() -- could not invert flexibility 
+ForceBeamColumn3d::update() -- could not invert flexibility 
+Elementos introducidos: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16  
+Elementos totales del modelo: 16 
+------------------------------------------------------ 
+Nudos del elemento 1: 1 2  
+Todos los elementos cargados 
+Tiempo de cálculo:   0.34 s
