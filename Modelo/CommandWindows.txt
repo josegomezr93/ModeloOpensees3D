@@ -1,6 +1,6 @@
 Ejecutando OpenSees...
-Fecha de inicio: 31/10/2020
-Hora de inicio: 15:42
+Fecha de inicio: 2/11/2020
+Hora de inicio: 3:5
  
  
          OpenSees -- Open System For Earthquake Engineering Simulation 
@@ -12,21 +12,17 @@ Hora de inicio: 15:42
   (Copyright and Disclaimer @ http://www.berkeley.edu/OpenSees/copyright.html) 
  
  
-Cargando nodos 
-N de Nudos: 28 
-Nodos OK 
-Cargando elementos 
-ForceBeamColumn3d::update() -- could not invert flexibility 
-ForceBeamColumn3d::update() -- could not invert flexibility 
-ForceBeamColumn3d::update() -- could not invert flexibility 
-ForceBeamColumn3d::update() -- could not invert flexibility 
-ForceBeamColumn3d::update() -- could not invert flexibility 
-ForceBeamColumn3d::update() -- could not invert flexibility 
-ForceBeamColumn3d::update() -- could not invert flexibility 
-ForceBeamColumn3d::update() -- could not invert flexibility 
-Elementos introducidos: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16  
-Elementos totales del modelo: 16 
------------------------------------------------------- 
-Nudos del elemento 1: 1 2  
-Todos los elementos cargados 
-Tiempo de cálculo:   0.34 s
+N de Nudos: 44 
+Cargando los elementos 
+WARNING ZeroLength::setDomain(): Element 24 has L= 5000, which is greater than the tolerance 
+WARNING ZeroLength::setDomain(): Element 26 has L= 7616.43, which is greater than the tolerance 
+WARNING ZeroLength::setDomain(): Element 27 has L= 3001.67, which is greater than the tolerance 
+WARNING ZeroLength::setDomain(): Element 28 has L= 5830.95, which is greater than the tolerance 
+WARNING ZeroLength::setDomain(): Element 29 has L= 7071.07, which is greater than the tolerance 
+N de Elementos: 32 
+Elementos introducidos: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32  
+Elementos totales del modelo: 32 
+-------Elementos cargados OK-------- 
+Cargando las masas nodales 
+Masas nodales cargadas 
+Tiempo de cálculo:   0.24 s

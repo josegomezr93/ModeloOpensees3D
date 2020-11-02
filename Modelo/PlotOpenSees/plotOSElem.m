@@ -53,7 +53,7 @@ while ( ~feof(fid2) )
     if (regexpi(tline, 'element elasticBeamColumn')>0) 
         c(1,3)=c(1,3)+1;
         tline=str2mat(tline);  % Convierte tline en matriz de letras
-        elemB(c(1,3),:) = sscanf(tline(26:end), '%f %f %f', [1,3]);  
+        elemB(c(1,3),:) = sscanf(tline(27:end), '%f %f %f', [1,3]);  
     elseif (regexpi(tline, 'element nonlinearBeamColumn')>0) 
         c(1,3)=c(1,3)+1;
         tline=str2mat(tline);  % Convierte tline en matriz de letras
