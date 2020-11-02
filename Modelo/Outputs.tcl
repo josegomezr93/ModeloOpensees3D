@@ -29,5 +29,9 @@
 	recorder Element -file $Outputs/Beams/ele5gp1def.out -ele 5 section 1 deformation; 
 
 
-	
+	# Salida de matriz de modos de vibración:	
+	file mkdir $Outputs/Modos
+
+# Salida de matrices de masas y rigideces:	
+	file mkdir $Outputs/Matrices
 

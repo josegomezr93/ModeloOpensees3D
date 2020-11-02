@@ -69,7 +69,7 @@ while ( ~feof(fid2) )
     elseif (regexpi(tline, 'rigidLink beam ')>0) 
         c(1,3)=c(1,3)+1;
         tline=str2mat(tline);  % Convierte tline en matriz de letras
-        elemB(c(1,3),2:3) = sscanf(tline(15:end), '%f %f', [1,2]);    
+        elemB(c(1,3),2:3) = sscanf(tline(16:end), '%f %f', [1,2]);    
      elseif (regexpi(tline, 'rigidLink bar ')>0) 
         c(1,3)=c(1,3)+1;
         tline=str2mat(tline);  % Convierte tline en matriz de letras

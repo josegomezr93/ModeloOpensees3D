@@ -6,17 +6,17 @@
 	set IySv1 205e4; #Iyy inercia menor
 	set IzSv1 2772e4; #Izz inercia mayor
 	set massSv1 [expr $ASv1*$ds]; #[expr $ASv1*$dc]
-	set WySv1 0.0;
+	set WySv1 [expr -$massSv1*$g];
 	set WzSv1 0.0;
-	set WxSv1 [expr -$massSv1*$g];
+	set WxSv1 0.0;
 	
-	section Elastic $Sv1 $Es $ASv1 $IzSv1 $IySv1 $Gs $ItSv1;
+	#section Elastic $Sv1 $Es $ASv1 $IzSv1 $IySv1 $Gs $ItSv1;
 	
 	
 	#Seccion Columna
 	set Sv2 40002; #HEB 200 columna
-	set ASv2 78.1; #Area de la seccion
-	set ItSv2 [expr 63.4 * 10000]; #Momento de inercia torsional
+	set ASv2 78.1e2; #Area de la seccion
+	set ItSv2 56.9e6; #Momento de inercia torsional
 	set massSv2 [expr $ASv2*$ds];
 	set WySv2 0.0;
 	set WzSv2 [expr -$massSv2*$g];
@@ -48,16 +48,16 @@
 # DEFINIR LAS FIBRAS DE LA SECCIÓN DE HORMIGÓN
 	#section Fiber 		$secTag
 	 section Fiber $Sv2 -GJ [expr $Gs*$ItSv2] {
-	 patch quad $::Acero $nvert_ala $nhorz_ala 	$y1  $z4 	$y2  $z4 	$y2  $z1 	$y1  $z1; 	
-	 patch quad $::Acero $nvert_alma $nhorz_alma 	$y2  $z3 	$y3  $z3 	$y3  $z2 	$y2  $z2;
-	 patch quad $::Acero $nvert_ala $nhorz_ala 	$y3  $z4 	$y4  $z4 	$y4  $z1 	$y3  $z1;	 						
+	 patch quadr $::Acero $nvert_ala $nhorz_ala 	$y1  $z4 	$y2  $z4 	$y2  $z1 	$y1  $z1; 	
+	 patch quadr $::Acero $nvert_alma $nhorz_alma 	$y2  $z3 	$y3  $z3 	$y3  $z2 	$y2  $z2;
+	 patch quadr $::Acero $nvert_ala $nhorz_ala 	$y3  $z4 	$y4  $z4 	$y4  $z1 	$y3  $z1;	 						
 	}
 
 # Transformadas geometricas del plano xZ || a que coordenada global
 	set Tbz 1;
 	set Tbx 2;
 	set Tcol 3;
-	geomTransf Linear $Tbz 0 -1 0;
-	geomTransf Linear $Tbx 1 0 0;
-	geomTransf PDelta $Tcol 0 -1 0;
+	geomTransf Linear $Tbz 0 0 1;
+	geomTransf Linear $Tbx 0 0 1;
+	geomTransf Linear $Tcol -1 0 0;
 	

@@ -18,7 +18,7 @@ proc doMassMatrix {ConvInf Outputs Inf} {
 	constraints Transformation
 
 	integrator NewmarkExplicit 0.5; 	# it should be an explicit integrator		
-	test NormDispIncr 1.0e-10  10 $ConvInf;
+	# test NormDispIncr 1.0e-10  10 $ConvInf;
 	algorithm Newton;					
 	analysis Transient;					
 	analyze 1 1; # it should be 1 step of size 1
@@ -27,7 +27,8 @@ proc doMassMatrix {ConvInf Outputs Inf} {
 	puts "Writing M..."
 	}
 	file mkdir $Outputs/Matrices
-	printA -file $Outputs/Matrices/M.out; 
+	printA -file $Outputs/Matrices/M.out;
+	printA;
 	
 	reset
 }
@@ -53,6 +54,7 @@ proc doStiffnessMatrix {ConvInf Outputs Inf} {
 	}
 	file mkdir $Outputs/Matrices
 	printA -file $Outputs/Matrices/K.out;
+	printA;
 	
 	reset
 
@@ -120,9 +122,9 @@ proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 	source "Outputs.tcl";
 	}
 	
-	system UmfPack
+	system ProfileSPD
 	constraints Transformation
-	numberer Plain
+	numberer RCM
 	
 	test NormDispIncr $tol  $iter $ConvInf
 	algorithm KrylovNewton

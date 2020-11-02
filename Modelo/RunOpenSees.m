@@ -30,7 +30,7 @@ Outputs='Frame';
 % Ploteadores válidos para modelos 3D.
 
 % PLOTEAMOS LA ESTRUCTURA SIN DEFORMAR
- [F, hfig] = plotOSElem('Nodes.tcl','FrameElem.tcl',[-12.1417,19.3439],[-100 5100 -1000 1000 -1 4000]);
+[F, hfig] = plotOSElem('Nodes.tcl','FrameElem.tcl',[-12.1417,19.3439],[-100 5100 -1000 1000 -1 4000]);
 
 % % PLOTEAMOS LA ESTRUCTURA DEFORMADA (en función del análisis realizado)
 % [F, hfig] = plotOSDef('Nodes.tcl','FrameElem.tcl',...
