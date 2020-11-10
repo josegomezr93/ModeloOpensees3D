@@ -1,117 +1,103 @@
- ###########################################################################
- #
- #                       PROCEDURES FOR OPENSEES ANALYSIS
- # 
- #       Author: David Galé-Lamuela
- #       Department: Ingeniería Mecánica ETSII (UPM)
- #
- ###########################################################################
+ # ANÁLISIS
 
-proc doMassMatrix {ConvInf Outputs Inf} {
+#===========================================#
+#			   MATRIZ DE MASAS				#
+#===========================================#
+
+proc doMassMatrix {ConvInf Salidas Inf} {
+	
+	if {$Inf != "NoInf"} {						
+	puts "------------------------------------------------------"
+	puts "MATRIZ DE MASAS"
+	}
+		
+	constraints Transformation;					# Para definir cómo se manejan las restricciones en GDL de los nudos.
+	numberer Plain;								# Reenumera los GDL para minimizar el ancho de banda de las matrices
+	system FullGeneral; 						# Para definir cómo se resuelve el sistema de ecuaciones.
+			
+	test NormDispIncr 1.0e-10  10 $ConvInf;		# Para construir un test de convergencia definiendo tolerancias e iteraciones.
+	integrator NewmarkExplicit 0.5 ; 			# Determina el paso predictivo del tiempo t+dt y depende de si el análisis será estático o dinámico.
+												# Debe ser un integrador explícito porque computacionalmente es más eficiente.
+	algorithm Newton;							# Para definir cómo se resuelve las ecuaciones no lineales.
+	analysis Transient;							# Para definir el tipo de análisis estático, dinámico con paso constante del tiempo o variable.
+	analyze 1 1; 								# Para llevar a cabo el análisis definimos el número de pasos y el incremento del paso del tiempo.
+												# El paso del tiempo solo es válido para análisis dinámicos.
 	
 	if {$Inf != "NoInf"} {
-	puts "--------------------------"
-	puts "MASS MATRIX"
+	puts "Escribiendo matriz de masas M..."
 	}
-	
-	system FullGeneral
-	constraints Transformation
 
-	integrator NewmarkExplicit 0.5; 	# it should be an explicit integrator		
-	# test NormDispIncr 1.0e-10  10 $ConvInf;
-	algorithm Newton;					
-	analysis Transient;					
-	analyze 1 1; # it should be 1 step of size 1
-	
-	if {$Inf != "NoInf"} {
-	puts "Writing M..."
-	}
-	file mkdir $Outputs/Matrices
-	printA -file $Outputs/Matrices/M.out;
+	printA -file $Salidas/Matrices/M.txt;
 	printA;
 	
-	reset
 }
-
+	#=============#
+	#    NOTAS    #
+	#=============#
 	
-proc doStiffnessMatrix {ConvInf Outputs Inf} {
+	# El integrador monta el sistema Mü + Cú + ku = F y lo organiza para que se llegue a un sistema Ax = B y nos devuelve la matriz A. Siendo B una función conocida.
+	# En estático tendríamos ku = F y se corresponde la matriz de rigidez K con la matriz A (del printA).
+	# En el artículo Numerical Integration explica cómo interpretar el sistema resuelto para sacar la matriz de masas M.
+	# En caso de que el amortiguamiento sea 0, la matriz de masas A sería M.
+	# En diferencias centrales es sencillo de intuir. Se necesita un integrador EXPLÍCITO.
 	
-	if {$Inf != "NoInf"} {
-	puts "--------------------------"
-	puts "STIFFNESS MATRIX"
-	}
+#===========================================#
+#			 MATRIZ DE RIGIDECES			#
+#===========================================#
 	
-	system FullGeneral
-	constraints Transformation
+proc doStiffnessMatrix {ConvInf Salidas Inf} {
 	
-	test NormDispIncr 1.0e-10 10 $ConvInf; 
-	integrator LoadControl 1
-	algorithm Newton
-	analysis Static
-	analyze 1
-	if {$Inf != "NoInf"} {
-	puts "Writing K..."
-	}
-	file mkdir $Outputs/Matrices
-	printA -file $Outputs/Matrices/K.out;
-	printA;
-	
-	reset
-
-}
-
-proc doModal {numModes Outputs Inf} {
-# Outputs: nombre de la carpeta Outputs o "NoOutputs" si no se quieren resultados
-
 	if {$Inf != "NoInf"} {
 	puts "------------------------------------------------------"
-	puts "MODAL ANALYSIS"
+	puts "MATRIZ DE RIGIDEZ"
 	}
-
-	system UmfPack
-	constraints Transformation
 	
-	# set lambda [eigen  $numModes];	# 
-	set lambda [eigen $numModes]; # -fullGenLapack in case of [nº modes=ngdl and masses]
-
+	constraints Transformation;             	# Para definir cómo se manejan las restricciones en GDL de los nudos.
+	numberer Plain;								# Reenumera los GDL para minimizar el ancho de banda de las matrices.
+	system FullGeneral;							# Para definir cómo se resuelve el sistema de ecuaciones.
 	
-	set omega {}
-	set f {}
-	set T {}
-	set pi [expr acos(-1.0)];
+	test NormDispIncr 1.0e-10 10 $ConvInf;  	# Para construir un test de convergencia definiendo tolerancias e iteraciones.                                     
+	integrator LoadControl 1;               	# Determina el paso predictivo del tiempo t+dt y depende de si el análisis será estático o dinámico.
+												# Se indica el factor de incremento lambda.	
+												# Se trata de un control de cargas clásico si las cargas están en load pattern con un TimeSeries de factor 1.0 (por defecto).	
 	
-	foreach lam $lambda {
-		lappend omega [expr sqrt($lam)]
-		lappend f [expr sqrt($lam)/(2*$pi)]
-		lappend T [expr (2*$pi)/sqrt($lam)]
-	}
+	algorithm Newton;                       	# Para definir cómo se resuelve las ecuaciones no lineales.
+	analysis Static;                        	# Para definir el tipo de análisis estático, dinámico con paso constante del tiempo o variable.
+	analyze 1;	                            	# Para llevar a cabo el análisis definimos el número de pasos y el incremento del paso del tiempo.
+												# El paso del tiempo solo es válido para análisis dinámicos.
 	
 	if {$Inf != "NoInf"} {
-	puts "Periods are: $T -s-"
-	puts "Frequencies are: $f -Hz-"
+	puts "Escribiendo matriz de rigideces K..."
 	}
+	printA -file $Salidas/Matrices/K.txt;
+	printA;
 	
-	if {$Outputs != "NoOutputs"} {
-		file mkdir $Outputs/Modes
-		for { set k 1 } { $k <= $numModes } { incr k } {
-			 recorder Node -file [format "$Outputs/Modes/mode%i.out" $k] -time -nodeRange 1 "$::NodeEnd" -dof 1 2 3 4 5 6  "eigen $k"
-		}
-		set period "$Outputs/Modes/Periods.txt"
-		set Periods [open $period "w"]
-		foreach t $T {
-			puts $Periods " $t"
-		}
-		close $Periods
-		record
-	}
-
 }
-
+	#=============#
+	#    NOTAS    #
+	#=============#
+	
+	# Para determinar la rigidez necesitamos conocer las siguientes propiedades ya definidas en otros scripts:
+	
+	# PROPIEDADES MECÁNICAS DE LOS MATERIALES:
+	#			- Módulo elástico (Young) del material.
+	#			- Momento de inercia en función de la geometría de la sección.
+	# PROPIEDADES GEOMÉTRICAS DE LA ESTRUCTURA:
+	#			- Longitudes de los elementos estructurales que conectan los nudos.
+	#			- Condiciones de contorno de la estructura que definirán la proporción de rigidez.
+	
+	# En el cálculo dinámico los giros no producen fuerzas, solo las masas desplazadas.
+	# Por lo que se eliminan los términos de los giros como incógnitas.
+	# Las únicas incógnitas que quedan son los desplazamientos de los nudos susceptibles de movimiento.
+	# Esta nueva matriz más pequeña se llama 'matriz reducida' o 'matriz condensada'.
+	# Opensees genera dicha matriz.
+	
+#===========================================#
+#		   ANÁLISIS GRAVITATORIO			#
+#===========================================#
 
 proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 # Outputs: nombre de la carpeta Outputs o "NoOutputs" si no se quieren resultados
-	remove recorders 
-	wipeAnalysis 
 	
 	if {$Inf != "NoInf"} {
 	puts "------------------------------------------------------"
@@ -122,9 +108,9 @@ proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 	source "Outputs.tcl";
 	}
 	
-	system ProfileSPD
+	numberer RCM;
+	system UmfPack; #Para grandes modelos funciona a la perfeccion este sistema
 	constraints Transformation
-	numberer RCM
 	
 	test NormDispIncr $tol  $iter $ConvInf
 	algorithm KrylovNewton
@@ -152,13 +138,53 @@ proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 	}
 	loadConst -time 0; # hace que las fuerzs de gravedad se mantengan constantes
     return $ok
+    record
 }
 
+#===========================================#
+#		   ANÁLISIS MODAL ESPECTRAL			#
+#===========================================#
 
+proc doModal {numModes Salidas} {
+	
+	puts "------------------------------------------------------";
+	puts "ANALISIS MODAL ESPECTRAL";
+
+	file mkdir $Salidas/Modos;
+
+	constraints Transformation;
+	system FullGeneral;
+	numberer Plain;
+	
+	set lambda [eigen -fullGenLapack $numModes];
+	set omega {}
+	set f {}
+	set T {}
+
+
+	foreach lam $lambda {
+		lappend omega [expr sqrt($lam)];
+		lappend f [expr sqrt($lam)/(2*$::pi)];
+		lappend T [expr (2*$::pi)/sqrt($lam)];
+	}
+	
+	puts "periodos son $T";
+	
+	set period "$Salidas/Modos/Periods.txt";
+	set Periods [open $period "w"]
+	foreach t $T {
+		puts $Periods " $t"
+	}
+	close $Periods
+
+}
+
+#===========================================#
+#		      ANÁLISIS PUSHOVER				#
+#===========================================#
+	
 proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 # Outputs: nombre de la carpeta Outputs o "NoOutputs" si no se quieren resultados
-	remove recorders 
-	wipeAnalysis 
 	
 	if {$Inf != "NoInf"} {
 	puts "------------------------------------------------------"
@@ -170,8 +196,7 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 	}
 	
 	system UmfPack
-	constraints Penalty 1.0e25 1.0e25;
-	numberer Plain
+	constraints Penalty 1.0e16 1.0e16;
 	
 	integrator DisplacementControl   $ControlNode $dof $dU 1 $dU $dU; # Control por desplazamientos en Story 1
 	test NormDispIncr $tol  $iter $ConvInf
@@ -189,10 +214,10 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 		set itern [expr $itern+1]
 		set currentDisp [nodeDisp $ControlNode $dof]
 		
-		# if {$Inf != "NoInf"} {
-			# puts Step:$itern 
-			# puts desp:$currentDisp
-		# }
+		if {$Inf != "NoInf"} {
+			puts Step:$itern 
+			puts desp:$currentDisp
+		}
 	}
 	if {$Inf != "NoInf"} {
 		if {$ok == 0} {
@@ -204,41 +229,41 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 	    return $ok
 }	
 
+#===========================================#
+#		       ANÁLISIS DINÁMICO			#
+#===========================================#
 
+proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter Salidas Inf} {
 
-proc doDynamic {dtcal TmaxAnalysis gamma beta ConvInf tol iter Outputs Inf} {
-# Outputs: nombre de la carpeta Outputs o "NoOutputs" si no se quieren resultados
 	if {$Inf != "NoInf"} {
 		puts "------------------------------------------------------"
-		puts "DYNAMIC ANALYSIS"
-		puts "TmaxAnalysis:$TmaxAnalysis"
+		puts "ANALISIS DINAMICO"
 	}
 
-	if {$Outputs != "NoOutputs"} {
-	source "Outputs.tcl";
+	if {$Salidas != "NoSalidas"} {
+	source "Salidas.tcl";
 	}
 	
-	
-	system UmfPack; 	# system FullGeneral # in case of obtaining K in each step
-	constraints Transformation
+	constraints Transformation	
+	numberer Plain
+	system UmfPack
 
-	integrator Newmark $gamma $beta	
-
-	test EnergyIncr $tol $iter $ConvInf
-	algorithm KrylovNewton;					
-	analysis Transient;					# define type of analysis: time-dependent
+	test EnergyIncr $tol $iter $ConvInf;					
+	algorithm KrylovNewton;									
+	integrator Newmark $gamma $beta;						
+	analysis Transient;					
+	set ok [analyze $PasoAnalisis $dtAnalisis];
 
 	set itern 0
 	set ok 0
 	
-	set controlTime 0;
-	while {$controlTime < $TmaxAnalysis && $ok == 0} {
+	set TiempoControl 0;
+	while {$TiempoControl < $TmaxAnalisis && $ok == 0} {
 		
-		set ok [analyze 1 $dtcal];
-		set controlTime [getTime];
-		
-		
-		set ok [DynamicAlgoritm $ok $Inf $itern $dtcal $tol $iter $controlTime $ConvInf]
+		set ok [analyze 1 $dtAnalisis];
+		set TiempoControl [getTime];
+				
+		set ok [DynamicAlgoritm $ok $Inf $itern $dtAnalisis $tol $iter $TiempoControl $ConvInf]
 		
 			
 		set itern [expr $itern+1]
@@ -249,217 +274,57 @@ proc doDynamic {dtcal TmaxAnalysis gamma beta ConvInf tol iter Outputs Inf} {
 		}
 		# ----------------------------------------------------------------------------------------------
 			
-		# puts Step:$itern 
-		# puts CurrentTime:$controlTime
+		puts Paso:$itern 
+		puts TiempoActual:$TiempoControl
 	}
 
 	if {$Inf != "NoInf"} {
 		if {$ok == 0} {
-		  puts "Transient analysis completed SUCCESSFULLY End Time: [getTime]";
+		  puts "Analisis dinamico completado SATISFACTORIAMENTE en el instante: [getTime]";
 		} else {
-		  puts "Transient analysis FAILED End Time: [getTime]";
+		  puts "Analisis dinamico FALLO en el instante: [getTime]";
 		}
 	}
 		
 		return $ok
 }
 
+#===========================================#
+#  	   	   MODELO DE AMORTIGUAMIENTO	    #
+#===========================================#
 
-proc doReversedCyclic {iDstep dU ControlNode dof ConvInf tol iter Outputs Inf} {
-# Outputs: nombre de la carpeta Outputs o "NoOutputs" si no se quieren resultados
-	if {$Inf != "NoInf"} {
-		puts "------------------------------------------------------"
-		puts "STATIC REVERSED CYCLIC ANALYSIS"
-	}
-	
-	if {$Outputs != "NoOutputs"} {
-	source "Outputs.tcl";
-	}
-	
-	# system UmfPack
-	system BandGeneral
-	constraints Penalty 1.0e25 1.0e25;
-
-		set D0 0.0
-		foreach Dstep $iDstep {
-			set D1 $Dstep
-			set Dincr [expr $D1 - $D0]
-			set itern 0
-			
-			integrator DisplacementControl $ControlNode $dof $Dincr; 
-			test NormDispIncr $tol $iter $ConvInf
-			algorithm KrylovNewton
-			analysis Static
-			
-			set ok [analyze 1]
-			
-		# set ok [StaticAlgoritm $ok $Inf $itern $tol $iter $ConvInf]	
+proc DampingModel {DampingRatio nEigenI nEigenJ Modelo Inf} {
 		
-			set itern [expr $itern+1]
-			
-			set D0 $D1;			
-		}
-		
-		if {$Inf != "NoInf"} {
-		if {$ok == 0} {
-		  puts "Reversed Cyclic analysis completed SUCCESSFULLY End Step: $D0";
-		} else {
-		  puts "Reversed Cyclic analysis FAILED End Step: $D0";
-		}
-	}
-		
-	return $ok
-  
-} 
- 
- # Algoritmos para mejorar la convergencia en Cálculo Estático
- proc StaticAlgoritm {ok Inf itern tol iter ConvInf} {
-		if {$ok != 0} {
-			if {$Inf != "NoInf"} {
-				puts "Trying NewtonWithLineSearch .."
-				puts Step:$itern 
-			}
-			algorithm NewtonLineSearch 0.8
-			set ok [analyze 1]; 
-			if {$ok == 0} {puts "that worked .. back to KrylovNewton"}
-			algorithm KrylovNewton;
-		}
-		
-		if {$ok != 0} {
-			if {$Inf != "NoInf"} {
-				puts "Trying Broyden .." 
-			}
-			test NormDispIncr $tol  $iter $ConvInf;
-			algorithm Broyden 20
-			set ok [analyze 1]; 
-			if {$ok == 0} {puts "that worked .. back to KrylovNewton"}
-			algorithm KrylovNewton;
-		}
-		
-		if {$ok != 0} {
-			if {$Inf != "NoInf"} {
-				puts "Trying ModifiedNewton with Initial Tangent .."
-			}
-			test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
-			algorithm ModifiedNewton –initial;
-			set ok [analyze 1]; 
-			if {$ok == 0} {puts "that worked .. back to KrylovNewton"}
-			test NormDispIncr $tol  $iter $ConvInf;
-			algorithm KrylovNewton;
-		}
-		
-		if {$ok != 0} {
-			if {$Inf != "NoInf"} {
-				puts "Trying Newton with Initial Tangent .."
-			}
-			test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
-			algorithm Newton –initial;
-			set ok [analyze 1]; 
-			if {$ok == 0} {puts "that worked .. back to KrylovNewton"}
-			test NormDispIncr $tol  $iter $ConvInf;
-			algorithm KrylovNewton;
-		
-		}
-return $ok			
-}	
-
- # Algoritmos para mejorar la convergencia en Cálculo Dinámico
-proc DynamicAlgoritm {ok Inf itern dtcal tol iter controlTime ConvInf} {
-		
-	if {$ok != 0} {
-			if {$Inf != "NoInf"} {
-			puts "Trying NewtonWithLineSearch .."
-			puts Step:$itern
-			puts CurrentTime:$controlTime
-			}
-			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
-			algorithm NewtonLineSearch .8
-			set ok [analyze 1 $dtcal]; 
-			if {$ok == 0} {puts "that worked .. back to KrylovNewton"}
-			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
-			algorithm KrylovNewton;
-		}
-		
-		if {$ok != 0} {
-			if {$Inf != "NoInf"} {
-			puts "Trying Broyden .."
-			}
-			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
-			algorithm Broyden 20
-			set ok [analyze 1 $dtcal]; 
-			if {$ok == 0} {puts "that worked .. back to KrylovNewton"}
-			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
-			algorithm KrylovNewton;
-		}
-		
-		if {$ok != 0} {
-			if {$Inf != "NoInf"} {
-			puts "Trying ModifiedNewton with Initial Tangent .."
-			}
-			# test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
-			test EnergyIncr $tol $iter $ConvInf
-			algorithm ModifiedNewton –initial;
-			set ok [analyze 1 $dtcal]; 
-			if {$ok == 0} {puts "that worked .. back to KrylovNewton"}
-			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
-			algorithm KrylovNewton;
-		}
-		
-		if {$ok != 0} {
-			if {$Inf != "NoInf"} {
-			puts "Trying Newton with Initial Tangent .."
-			}
-			# test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
-			test EnergyIncr $tol $iter $ConvInf
-			algorithm Newton –initial;
-			set ok [analyze 1 $dtcal]; 
-			if {$ok == 0} {puts "that worked .. back to KrylovNewton"}
-			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
-			algorithm KrylovNewton;
-		}	
-		
-		return $ok		
-}
-
-# Modelo de amortiguamiento
-proc DampingModel {DampingRatio nEigenI nEigenJ Model Inf} {
-
 if {$Inf != "NoInf"} {
 		puts "------------------------------------------------------"
-		puts "DAMPING MODEL"
-		puts "Damping Ratio: $DampingRatio";	# damping ratio
+		puts "MODELO DE AMORTIGUAMIENTO"
+		puts "Ratio de amortiguamiento: $DampingRatio";	
 	}
 
 	if {$nEigenJ > 1} {
-	set lambdaN [eigen -genBandArpack $nEigenJ];			# eigenvalue analysis for nEigenJ modes
+	set lambdaN [eigen -genBandArpack $nEigenJ];			# Análisis de autovalores para nEigenJ modos
 	} else {
-	set lambdaN [eigen -fullGenLapack $nEigenJ];			# eigenvalue analysis for nEigenJ modes
+	set lambdaN [eigen -fullGenLapack $nEigenJ];			# Análisis de autovalores para nEigenJ modos
 	}
 	
-set lambdaI [lindex $lambdaN [expr $nEigenI-1]]; 		# eigenvalue mode i
-set lambdaJ [lindex $lambdaN [expr $nEigenJ-1]]; 	# eigenvalue mode j
+set lambdaI [lindex $lambdaN [expr $nEigenI-1]]; 			# Autovalores del modo i
+set lambdaJ [lindex $lambdaN [expr $nEigenJ-1]]; 			# Autovalores del modo j
 
 set omegaI [expr pow($lambdaI,0.5)];
 set omegaJ [expr pow($lambdaJ,0.5)];
 
 
-if {$Model == "Mass"} {
+if {$Modelo == "Masa"} {
 	if {$Inf != "NoInf"} {
-		puts "Damping Model: Mass"
+		puts "Modelo de amortiguamiento: Masa"
 		puts omegaI:$omegaI
 		puts omegaJ:$omegaJ
 	}
-	set alphaM [expr 2*$DampingRatio*$omegaI];	# M-prop. damping; D = alphaM*M
-	set betaKcurr 0.0
-	set betaKinit 0.0
-	set betaKcomm 0.0
-rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 	
+	set alphaM [expr 2*$DampingRatio*$omegaI];			# Factor aplicado a la matriz de masas, [C1] = [alphaM]*[M]. La matriz de masas se considera invariable en el análisis.
+	set betaKcurr 0.0;                                  # Factor aplicado a la matriz de rigidez actual, [C2] = [betaKactual]*[Kactual]. Sistemas inelásticos: Actualiza la matriz [C] cada vez que varía la rigidez. [Beta] Constante y [K] variable.
+	set betaKinit 0.0;                                  # Factor aplicado a la matriz de rigidez inicial, [C3] = [betaKinicial]*[Kinicial]. Sistemas inelásticos: Actualiza la matriz [C] cada vez que varía la rigidez. [Beta] variable y [K] variable.
+	set betaKcomm 0.0;                                  # Factor aplicado a la matriz de rigidez ultima, [C4] = [betaKultima]*[Kultima]. Sistemas Elásticos. [Beta] constante y [K] constante
+rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 		# Amortiguamiento de Rayleigh, [D] = [C1] + [C2] + [C3] + [C4]  								
 if {$Inf != "NoInf"} {
 		puts alphaM:$alphaM
 	}
@@ -467,10 +332,10 @@ if {$Inf != "NoInf"} {
 
 if {$nEigenJ > 1} {
 
-if {$Model == "RayleighKini"} {
+if {$Modelo == "RayleighKinicial"} {
 	
 	if {$Inf != "NoInf"} {
-		puts "Damping Model: Rayleigh Kini "
+		puts "Modelo de amortiguamiento: Rayleigh K inicial "
 		puts omegaI:$omegaI
 		puts omegaJ:$omegaJ
 	}
@@ -480,41 +345,41 @@ set KcurrSwitch 0.0;
 set KcommSwitch 0.0;
 set KinitSwitch 1.0;
 
-set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	# M-prop. damping; D = alphaM*M
-set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		# current-K;      +beatKcurr*KCurrent
-set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   		# last-committed K;   +betaKcomm*KlastCommitt
-set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         			# initial-K;     +beatKinit*Kini
-rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 				# RAYLEIGH damping D=$alphaM*M + $betaKcurr*Kcurrent + $betaKcomm*KlastCommit + $beatKinit*$Kinitial
+set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	
+set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   			
+set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 									
 if {$Inf != "NoInf"} {
 		puts alphaM:$alphaM
 		puts betaKinit:$betaKinit
 	}
-} elseif {$Model == "RayleighKcomm"} {
+} elseif {$Modelo == "RayleighKultima"} {
 
 	if {$Inf != "NoInf"} {
-		puts "Damping Model: Rayleigh Kcomm"
+		puts "Modelo de amortiguamiento: Rayleigh K ultima"
 		puts omegaI:$omegaI
 		puts omegaJ:$omegaJ
 	}
 
-set MpropSwitch 1.0;
+set MpropSwitch 0.0;
 set KcurrSwitch 0.0;
 set KcommSwitch 1.0;
 set KinitSwitch 0.0;
 
-set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	# M-prop. damping; D = alphaM*M
-set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		# current-K;      +beatKcurr*KCurrent
-set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   		# last-committed K;   +betaKcomm*KlastCommitt
-set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         			# initial-K;     +beatKinit*Kini
-rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 				# RAYLEIGH damping D=$alphaM*M + $betaKcurr*Kcurrent + $betaKcomm*KlastCommit + $beatKinit*$Kinitial
+set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	
+set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   			
+set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 									
 if {$Inf != "NoInf"} {
 		puts alphaM:$alphaM
 		puts betaKcomm:$betaKcomm
 	}
-} elseif {$Model == "RayleighKcurr"} {
+} elseif {$Modelo == "RayleighKactual"} {
 	
 	if {$Inf != "NoInf"} {
-		puts "Damping Model: Rayleigh Kcurr"
+		puts "Modelo de amortiguamiento: Rayleigh K actual"
 		puts omegaI:$omegaI
 		puts omegaJ:$omegaJ
 	}
@@ -524,21 +389,21 @@ set KcurrSwitch 1.0;
 set KcommSwitch 0.0;
 set KinitSwitch 0.0;
 
-set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	# M-prop. damping; D = alphaM*M
-set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		# current-K;      +beatKcurr*KCurrent
-set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   		# last-committed K;   +betaKcomm*KlastCommitt
-set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         			# initial-K;     +beatKinit*Kini
-rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 				# RAYLEIGH damping D=$alphaM*M + $betaKcurr*Kcurrent + $betaKcomm*KlastCommit + $beatKinit*$Kinitial
+set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	
+set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   			
+set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 									
 if {$Inf != "NoInf"} {
 		puts alphaM:$alphaM
 		puts betaKcurr:$betaKcurr
 	}
 	
-} elseif {$Model == "modalDamping"} {
+} elseif {$Modelo == "AmortiguamientoModal"} {
 	
 	if {$Inf != "NoInf"} {
-		puts "Damping Model: Modal Damping"
-		puts Modes:$nEigenJ
+		puts "Modelo de amortiguamiento: Amortiguamiento modal"
+		puts Modos:$nEigenJ
 	}
 	set lambda [eigen  $nEigenJ];
 	modalDamping $DampingRatio
@@ -549,4 +414,127 @@ if {$Inf != "NoInf"} {
 
 }
 
+#===========================================#
+#  ALGORITMOS PARA MEJORA DE CONVEREGENCIA	#
+#===========================================#
+ 
+#===========================================#
+#  	   ALGORITMO PARA CÁLCULO ESTÁTICO	    #
+#===========================================#
 
+ proc StaticAlgoritm {ok Inf itern tol iter ConvInf} {
+		if {$ok != 0} {
+			if {$Inf != "NoInf"} {
+				puts "Probando NewtonWithLineSearch..."
+				puts Step:$itern 
+			}
+			algorithm NewtonLineSearch 0.8
+			set ok [analyze 1]; 
+			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
+			algorithm KrylovNewton;
+		}
+		
+		if {$ok != 0} {
+			if {$Inf != "NoInf"} {
+				puts "Probando Broyden .." 
+			}
+			test NormDispIncr $tol  $iter $ConvInf;
+			algorithm Broyden 20
+			set ok [analyze 1]; 
+			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
+			algorithm KrylovNewton;
+		}
+		
+		if {$ok != 0} {
+			if {$Inf != "NoInf"} {
+				puts "Probando ModifiedNewton con tangente inicial..."
+			}
+			test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
+			algorithm ModifiedNewton –initial;
+			set ok [analyze 1]; 
+			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
+			test NormDispIncr $tol  $iter $ConvInf;
+			algorithm KrylovNewton;
+		}
+		
+		if {$ok != 0} {
+			if {$Inf != "NoInf"} {
+				puts "Probando Newton con la tangente inicial..."
+			}
+			test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
+			algorithm Newton –initial;
+			set ok [analyze 1]; 
+			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
+			test NormDispIncr $tol  $iter $ConvInf;
+			algorithm KrylovNewton;
+		
+		}
+return $ok			
+}	
+
+#===========================================#
+#  	   ALGORITMO PARA CÁLCULO DINÁMICO	    #
+#===========================================#
+
+proc DynamicAlgoritm {ok Inf itern dtAnalisis tol iter TiempoControl ConvInf} {
+		
+	if {$ok != 0} {
+			if {$Inf != "NoInf"} {
+			puts "Probando NewtonWithLineSearch..."
+			puts Step:$itern
+			puts CurrentTime:$TiempoControl
+			}
+			# test NormDispIncr $tol  $iter $ConvInf;
+			test EnergyIncr $tol $iter $ConvInf
+			algorithm NewtonLineSearch .8
+			set ok [analyze 1 $dtAnalisis]; 
+			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
+			# test NormDispIncr $tol  $iter $ConvInf;
+			test EnergyIncr $tol $iter $ConvInf
+			algorithm KrylovNewton;
+		}
+		
+		if {$ok != 0} {
+			if {$Inf != "NoInf"} {
+			puts "Probando Broyden..."
+			}
+			# test NormDispIncr $tol  $iter $ConvInf;
+			test EnergyIncr $tol $iter $ConvInf
+			algorithm Broyden 20
+			set ok [analyze 1 $dtAnalisis]; 
+			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
+			# test NormDispIncr $tol  $iter $ConvInf;
+			test EnergyIncr $tol $iter $ConvInf
+			algorithm KrylovNewton;
+		}
+		
+		if {$ok != 0} {
+			if {$Inf != "NoInf"} {
+			puts "Probando ModifiedNewton con la tangente inicial..."
+			}
+			# test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
+			test EnergyIncr $tol $iter $ConvInf
+			algorithm ModifiedNewton –initial;
+			set ok [analyze 1 $dtAnalisis]; 
+			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
+			# test NormDispIncr $tol  $iter $ConvInf;
+			test EnergyIncr $tol $iter $ConvInf
+			algorithm KrylovNewton;
+		}
+		
+		if {$ok != 0} {
+			if {$Inf != "NoInf"} {
+			puts "Probando Newton con la tangente inicial..."
+			}
+			# test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
+			test EnergyIncr $tol $iter $ConvInf
+			algorithm Newton –initial;
+			set ok [analyze 1 $dtAnalisis]; 
+			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
+			# test NormDispIncr $tol  $iter $ConvInf;
+			test EnergyIncr $tol $iter $ConvInf
+			algorithm KrylovNewton;
+		}	
+		
+		return $ok		
+}

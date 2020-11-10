@@ -5,10 +5,11 @@
 	# Constantes que definen el comportamiento de los materiales
 	set ::Acero 1;
 	set fy 355;
-	set ds 7.85e-9; # [7850 kg/m3] Densidad del acero
+	set ds 7.850e-9; # [7850 kg/m3] Densidad del acero
 	set nus 0.3; # Poisson Acero
 	set Es 2.1e5; # Modulo de Young steel[N/mm^2]
 	set Gs [expr $Es/(2*($nus+1.0))]; # Shear modulus acero [N/mm^2]
+	set gamma [expr $g * $ds];
 	
 	uniaxialMaterial Steel02 $::Acero $fy $Es  0.0003 18.5 0.925 0.15 ;
 	
