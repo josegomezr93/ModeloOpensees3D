@@ -4,7 +4,7 @@
 #			   MATRIZ DE MASAS				#
 #===========================================#
 
-proc doMassMatrix {ConvInf Salidas Inf} {
+proc doMassMatrix {ConvInf Outputs Inf} {
 	
 	if {$Inf != "NoInf"} {						
 	puts "------------------------------------------------------"
@@ -27,7 +27,7 @@ proc doMassMatrix {ConvInf Salidas Inf} {
 	puts "Escribiendo matriz de masas M..."
 	}
 
-	printA -file $Salidas/Matrices/M.txt;
+	printA -file $Outputs/Matrices/M.txt;
 	printA;
 	
 }
@@ -45,7 +45,7 @@ proc doMassMatrix {ConvInf Salidas Inf} {
 #			 MATRIZ DE RIGIDECES			#
 #===========================================#
 	
-proc doStiffnessMatrix {ConvInf Salidas Inf} {
+proc doStiffnessMatrix {ConvInf Outputs Inf} {
 	
 	if {$Inf != "NoInf"} {
 	puts "------------------------------------------------------"
@@ -69,7 +69,7 @@ proc doStiffnessMatrix {ConvInf Salidas Inf} {
 	if {$Inf != "NoInf"} {
 	puts "Escribiendo matriz de rigideces K..."
 	}
-	printA -file $Salidas/Matrices/K.txt;
+	printA -file $Outputs/Matrices/K.txt;
 	printA;
 	
 }
@@ -145,12 +145,12 @@ proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 #		   ANÁLISIS MODAL ESPECTRAL			#
 #===========================================#
 
-proc doModal {numModes Salidas} {
+proc doModal {numModes Outputs} {
 	
 	puts "------------------------------------------------------";
 	puts "ANALISIS MODAL ESPECTRAL";
 
-	file mkdir $Salidas/Modos;
+	file mkdir $Outputs/Modos;
 
 	constraints Transformation;
 	system FullGeneral;
@@ -170,7 +170,7 @@ proc doModal {numModes Salidas} {
 	
 	puts "periodos son $T";
 	
-	set period "$Salidas/Modos/Periods.txt";
+	set period "$Outputs/Modos/Periods.txt";
 	set Periods [open $period "w"]
 	foreach t $T {
 		puts $Periods " $t"
@@ -194,9 +194,19 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 	if {$Outputs != "NoOutputs"} {
 	source "Outputs.tcl";
 	}
+
+	# variable constraintsTypeStatic Plain;		# default;
+	# if {  [info exists RigidDiaphragm] == 1} {
+	# 	if {$RigidDiaphragm=="ON"} {
+	# 		variable constraintsTypeStatic Lagrange;	#     for large model, try Transformation
+	# 	};	# if rigid diaphragm is on
+	# };	# if rigid diaphragm exists
+	# constraints $constraintsTypeStatic
+	constraints Penalty 1.0e16 1.0e16;
+	#constraints Plain;
 	
 	system FullGeneral
-	constraints Penalty 1.0e16 1.0e16;
+	
 	numberer RCM;
 	
 	integrator DisplacementControl $ControlNode $dof $dU; # 1 $dU $dU; # Control por desplazamientos en Story 1
@@ -228,24 +238,26 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 		}
 	}
 	    return $ok
+	    record
 }	
 
 #===========================================#
 #		       ANÁLISIS DINÁMICO			#
 #===========================================#
 
-proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter Salidas Inf} {
+proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter Outputs Inf} {
 
 	if {$Inf != "NoInf"} {
 		puts "------------------------------------------------------"
 		puts "ANALISIS DINAMICO"
 	}
 
-	if {$Salidas != "NoSalidas"} {
-	source "Salidas.tcl";
+	if {$Outputs != "NoOutputs"} {
+	source "Outputs.tcl";
 	}
-	
-	constraints Transformation	
+
+	constraints Penalty 1.0e16 1.0e16;
+	#constraints Transformation	
 	numberer Plain
 	system UmfPack
 
