@@ -1,12 +1,13 @@
 # OUTPUTS
 
-# Displacements
+#Displacements
 file mkdir $Outputs/Displacement
 recorder Node -file $Outputs/Displacement/nodesdispContr.out -time  -node 3 -dof 1  disp;
 # recorder Node -file $Outputs/Displacement/disp10.out    -node 10 -dof 1 2 3 4 5 6  disp; 
 	
-# # Accelerations
-# file mkdir $Outputs/Acceleration
+# Accelerations
+file mkdir $Outputs/Acceleration
+recorder Node -file $Outputs/Acceleration/nodesaccContr.out -time -node 3 -dof 1 accel;
 # recorder Node -file $Outputs/Acceleration/acc3.out  -time   -node 3 -dof  1 2 3 4 5 6  accel;
 # recorder Node -file $Outputs/Acceleration/acc6.out  -time   -node 6 -dof  1 2 3 4 5 6  accel;
 # recorder Node -file $Outputs/Acceleration/acc8.out -time -node 8 -dof 1 accel;
@@ -41,7 +42,7 @@ recorder Node -file $Outputs/Reactions/node10reac.out -time  -node 10 -dof 1 2 3
 
 
 # Salida de matriz de modos de vibración:	
-file mkdir $Outputs/Modos
+# file mkdir $Outputs/Modos
 
 # # Salida de matrices de masas y rigideces:	
 # 	file mkdir $Outputs/Matrices

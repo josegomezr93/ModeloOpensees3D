@@ -108,7 +108,7 @@ proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 	source "Outputs.tcl";
 	}
 	
-	numberer Plain;
+	numberer RCM;
 	system UmfPack; #Para grandes modelos funciona a la perfeccion este sistema
 	constraints Transformation;
 	
@@ -256,9 +256,9 @@ proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter
 	source "Outputs.tcl";
 	}
 
-	constraints Penalty 1.0e16 1.0e16;
-	#constraints Transformation	
-	numberer Plain
+	#constraints Transformation;
+	constraints Penalty 1.0e16 1.0e16;	
+	numberer RCM;
 	system UmfPack
 
 	test EnergyIncr $tol $iter $ConvInf;					

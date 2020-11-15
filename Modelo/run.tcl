@@ -42,13 +42,13 @@ source Outputs.tcl;
 # ANALYSIS
 source Analysis.tcl;
 
-#Analisis Modal
-wipeAnalysis;
-set GDL 2;
-set niveles 2;
-set numModes [expr $niveles * $GDL];
+# #Analisis Modal
+# wipeAnalysis;
+# set GDL 2;
+# set niveles 2;
+# set numModes [expr $niveles * $GDL];
 
-doModal $numModes $Outputs
+# doModal $numModes $Outputs
 
 # #ANALISIS GRAVITATORIO
 # wipeAnalysis;
@@ -61,22 +61,22 @@ doModal $numModes $Outputs
 # set cargaP1 [expr 9.0*$g / 4.0];
 # set cargaP2 [expr 12.0*$g / 4.0];
 # pattern Plain 1 1 {
-# 	# eleLoad	-ele 9 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-# 	# eleLoad	-ele 10 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-# 	# eleLoad	-ele 11 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-# 	# eleLoad	-ele 12 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-# 	# eleLoad	-ele 13 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-# 	# eleLoad	-ele 14 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-# 	# eleLoad	-ele 15 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-# 	# eleLoad	-ele 16 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-# 	# eleLoad -ele 1 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-# 	# eleLoad -ele 2 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-# 	# eleLoad -ele 3 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-# 	# eleLoad -ele 4 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-# 	# eleLoad -ele 5 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-# 	# eleLoad -ele 6 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-# 	# eleLoad -ele 7 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-# 	# eleLoad -ele 8 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad	-ele 9 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 10 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 11 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 12 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 13 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 14 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 15 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 16 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad -ele 1 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 2 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 3 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 4 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 5 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 6 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 7 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 8 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
 # 	load 2 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
 # 	load 5 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
 # 	load 8 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
@@ -87,7 +87,6 @@ doModal $numModes $Outputs
 # 	load 12 0.0 0.0 -$cargaP2 0.0 0.0 0.0;
 
 # }
-
 
 # doForceControl $dF $ConvInf $tol $iter $Outputs Inf;
 
@@ -123,7 +122,7 @@ doModal $numModes $Outputs
 # doStiffnessMatrix $ConvInf $Outputs Inf
 # printA;
 
-# ANÁLISIS DINÁMICO EN EL DOMINIO DEL TIEMPO:
+#ANÁLISIS DINÁMICO EN EL DOMINIO DEL TIEMPO:
 	
 # PROPIEDADES DE AMORTIGUAMIENTO
 set DampingRatio 0.05;	# Ratio de amortiguamiento del sistema en función del amortiguamiento crítico.
@@ -169,7 +168,7 @@ set dtAnalisis [expr $dt*0.5];				# Definimos el paso del tiempo para el anális
 set PasoAnalisis [expr int($TmaxAnalisis/$dtAnalisis)];  # Número de pasos del análisis que no tiene porqué coincidir con la frecuencia del acelerograma.
 
 set tol 1e-5;								# Tolerancia para el test de convergencia.
-set iter 5000;								# Número de iteraciones permitidas por paso.
+set iter 200;								# Número de iteraciones permitidas por paso.
 set gamma 0.5;								# Factor Gamma para el integrador Newmark (Método aceleración media = 0.5 ; Método aceleración lineal = 0.5).
 set beta 0.25;								# Factor Beta para el integrador Newmark (Método aceleración media = 0.25 ; Método aceleración lineal = 0.5).
 
