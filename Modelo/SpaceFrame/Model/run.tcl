@@ -42,72 +42,72 @@ source Outputs.tcl;
 # ANALYSIS
 source Analysis.tcl;
 
-#Analisis Modal
-wipeAnalysis;
-set GDL 2;
-set niveles 2;
-set numModes [expr $niveles * $GDL];
+# #Analisis Modal
+# wipeAnalysis;
+# set GDL 2;
+# set niveles 2;
+# set numModes [expr $niveles * $GDL];
 
-doModal $numModes $Outputs
+# doModal $numModes $Outputs
 
-#ANALISIS GRAVITATORIO
-wipeAnalysis;
-set dF 0.20;
-set iter 10;
-set ConvInf 1;
-set tol 1e-4;
+# #ANALISIS GRAVITATORIO
+# wipeAnalysis;
+# set dF 0.20;
+# set iter 10;
+# set ConvInf 1;
+# set tol 1e-4;
 
-timeSeries Linear 1;
-set cargaP1 [expr 9.0*$g / 4.0];
-set cargaP2 [expr 12.0*$g / 4.0];
-pattern Plain 1 1 {
-	eleLoad	-ele 9 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-	eleLoad	-ele 10 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-	eleLoad	-ele 11 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-	eleLoad	-ele 12 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-	eleLoad	-ele 13 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-	eleLoad	-ele 14 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-	eleLoad	-ele 15 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-	eleLoad	-ele 16 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
-	eleLoad -ele 1 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-	eleLoad -ele 2 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-	eleLoad -ele 3 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-	eleLoad -ele 4 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-	eleLoad -ele 5 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-	eleLoad -ele 6 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-	eleLoad -ele 7 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-	eleLoad -ele 8 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
-	load 2 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
-	load 5 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
-	load 8 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
-	load 11 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
-	load 3 0.0 0.0 -$cargaP2 0.0 0.0 0.0;
-	load 6 0.0 0.0 -$cargaP2 0.0 0.0 0.0;
-	load 9 0.0 0.0 -$cargaP2 0.0 0.0 0.0;
-	load 12 0.0 0.0 -$cargaP2 0.0 0.0 0.0;
+# timeSeries Linear 1;
+# set cargaP1 [expr 9.0*$g / 4.0];
+# set cargaP2 [expr 12.0*$g / 4.0];
+# pattern Plain 1 1 {
+# 	eleLoad	-ele 9 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 10 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 11 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 12 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 13 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 14 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 15 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad	-ele 16 -type -beamUniform $WySv1 $WzSv1 $WxSv1;
+# 	eleLoad -ele 1 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 2 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 3 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 4 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 5 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 6 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 7 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	eleLoad -ele 8 -type -beamUniform $WySv2 $WzSv2 $WxSv2;
+# 	load 2 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
+# 	load 5 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
+# 	load 8 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
+# 	load 11 0.0 0.0 -$cargaP1 0.0 0.0 0.0;
+# 	load 3 0.0 0.0 -$cargaP2 0.0 0.0 0.0;
+# 	load 6 0.0 0.0 -$cargaP2 0.0 0.0 0.0;
+# 	load 9 0.0 0.0 -$cargaP2 0.0 0.0 0.0;
+# 	load 12 0.0 0.0 -$cargaP2 0.0 0.0 0.0;
 
-}
+# }
 
-doForceControl $dF $ConvInf $tol $iter $Outputs Inf;
+# doForceControl $dF $ConvInf $tol $iter $Outputs Inf;
 
-#Analisis Pushover
-wipeAnalysis;
-set maxU 100.0;
-set numPasos 100;
-set dU [expr $maxU / $numPasos];
-set dof 1;
-set ControlNode $::nodo_cont;
-set iter 100;
-set ConvInf 1;
-set tol 1e-6;
+# #Analisis Pushover
+# wipeAnalysis;
+# set maxU 100.0;
+# set numPasos 100;
+# set dU [expr $maxU / $numPasos];
+# set dof 1;
+# set ControlNode $::nodo_cont;
+# set iter 100;
+# set ConvInf 1;
+# set tol 1e-6;
 
-timeSeries Linear 2;
-pattern Plain 2 2 {
-	sp 14 1 $dU;
-	sp 13 1 [expr $dU / 2];
-}
+# timeSeries Linear 2;
+# pattern Plain 2 2 {
+# 	sp 14 1 $dU;
+# 	sp 13 1 [expr $dU / 2];
+# }
 
-doPushover $maxU $dU $ControlNode $dof $ConvInf $tol $iter $Outputs Inf;
+# doPushover $maxU $dU $ControlNode $dof $ConvInf $tol $iter $Outputs Inf;
 
 # ####Matriz de Rigidez y de Masas#####
 # ##Matriz de Masas##
