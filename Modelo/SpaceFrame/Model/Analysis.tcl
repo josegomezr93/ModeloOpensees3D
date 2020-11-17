@@ -256,8 +256,8 @@ proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter
 	source "Outputs.tcl";
 	}
 
-	#constraints Transformation;
-	constraints Penalty 1.0e16 1.0e16;	
+	constraints Transformation;
+	#constraints Penalty 1.0e16 1.0e16;	
 	numberer RCM;
 	system UmfPack
 

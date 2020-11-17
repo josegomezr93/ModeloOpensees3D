@@ -173,6 +173,3 @@ set gamma 0.5;								# Factor Gamma para el integrador Newmark (Método acelera
 set beta 0.25;								# Factor Beta para el integrador Newmark (Método aceleración media = 0.25 ; Método aceleración lineal = 0.5).
 
 doDynamic $PasoAnalisis $dtAnalisis $TmaxAnalisis $gamma $beta $ConvInf $tol $iter $Outputs Inf
-
-	
-	

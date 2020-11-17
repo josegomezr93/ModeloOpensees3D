@@ -1,0 +1,46 @@
+Ejecutando OpenSees...
+Fecha de inicio: 10/11/2020
+Hora de inicio: 16:15
+ 
+ 
+         OpenSees -- Open System For Earthquake Engineering Simulation 
+                 Pacific Earthquake Engineering Research Center 
+                        Version 3.2.2 64-Bit 
+ 
+      (c) Copyright 1999-2016 The Regents of the University of California 
+                              All Rights Reserved 
+  (Copyright and Disclaimer @ http://www.berkeley.edu/OpenSees/copyright.html) 
+ 
+ 
+Cargando Materiales === 
+Materiales OK 
+Cargando secciones 
+Secciones Ok 
+Cargando el Modelo 
+Cargando Nodos === 
+N de nudos: 10 
+Nodos OK 
+Cargando los elementos === 
+N de elementos: 10 
+Elementos OK 
+Cargando Masas 
+Masas OK 
+Modelo OK 
+------------------------------------------------------ 
+ANALISIS MODAL ESPECTRAL 
+periodos son 0.4517929684618603 0.10357761223092542 
+eigenvector 1: 0.4101781317380476 1.0 
+eigenvector 2: -3.250620231016835 1.0 
+------------------------------------------------------ 
+STATIC FORCE CONTROL ANALYSIS 
+CTestNormDispIncr::test() - iteration: 1 current Norm: 0.00644472 (max: 1e-06, Norm deltaR: 4.7627e-08) 
+CTestNormDispIncr::test() - iteration: 2 current Norm: 6.66464e-16 (max: 1e-06, Norm deltaR: 4.44945e-08) 
+ 
+CTestNormDispIncr::test() - iteration: 1 current Norm: 1.03089e-16 (max: 1e-06, Norm deltaR: 4.16436e-08) 
+ 
+CTestNormDispIncr::test() - iteration: 1 current Norm: 1.51021e-17 (max: 1e-06, Norm deltaR: 3.89592e-08) 
+ 
+CTestNormDispIncr::test() - iteration: 1 current Norm: 2.17275e-17 (max: 1e-06, Norm deltaR: 3.64589e-08) 
+ 
+Force Control analysis completed SUCCESSFULLY 
+Tiempo de cálculo:   0.42 s
