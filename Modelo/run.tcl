@@ -38,6 +38,7 @@ source Model.tcl;
 # OUTPUTS
 set Outputs $SimulationName;
 source Outputs.tcl;
+source DisplayPlane.tcl;
 source DisplayModel3D.tcl;
 
 # ANALYSIS
