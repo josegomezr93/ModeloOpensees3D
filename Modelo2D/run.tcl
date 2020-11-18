@@ -56,12 +56,12 @@ set numModes 2;
 doModal $numModes $Outputs
 
 # Para plotar los modos
-# recorder display "Mode Shape n" 10 10 500 500 -wipe
-# prp $h $h 1;
-# vup 0 1 0;
-# vpn 0 0 1;
-# viewWindow -200 200 -200 200;
-# display -n 5 20;
+recorder display "Mode Shape n" 10 10 500 500 -wipe
+prp $h $h 1;
+vup 0 1 0;
+vpn 0 0 1;
+viewWindow -200 200 -200 200;
+display -n 5 20;
 
 # Obtener los vectores propios
 #nodeEigenvector $nodeTag $eigenvector <$dof>

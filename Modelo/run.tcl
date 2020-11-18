@@ -38,17 +38,21 @@ source Model.tcl;
 # OUTPUTS
 set Outputs $SimulationName;
 source Outputs.tcl;
+source DisplayModel3D.tcl;
 
 # ANALYSIS
 source Analysis.tcl;
 
-# #Analisis Modal
-# wipeAnalysis;
-# set GDL 2;
-# set niveles 2;
-# set numModes [expr $niveles * $GDL];
+#Analisis Modal
+wipeAnalysis;
+set GDL 2;
+set niveles 2;
+set numModes [expr $niveles * $GDL];
 
-# doModal $numModes $Outputs
+doModal $numModes $Outputs
+
+# Define DISPLAY -------------------------------------------------------------
+DisplayModel3D DeformedShape ;	 # options: DeformedShape NodeNumbers ModeShape
 
 # #ANALISIS GRAVITATORIO
 # wipeAnalysis;
