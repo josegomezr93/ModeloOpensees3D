@@ -1,5 +1,5 @@
 %% Analisis Gravitatorio
-cd('C:\Users\Jose German\Documents\Codigos\Opensees\Tarea03\Modelo\SpaceFrame\Reactions');
+cd('..\Modelo\SpaceFrame\Reactions');
 f1 = load('node1reac.out'); 
 f4 = load('node4reac.out');
 f7 = load('node7reac.out'); 
@@ -12,7 +12,7 @@ fuerzaZ_node10 = f10(:,4);
 
 
 %% Pushover
-cd('C:\Users\Jose German\Documents\Codigos\Opensees\Tarea03\Modelo\SpaceFrame\Reactions');
+cd('..\Modelo\SpaceFrame\Reactions');
 x1 = load('node1reac.out'); 
 x4 = load('node4reac.out');
 x7 = load('node7reac.out'); 
@@ -26,7 +26,7 @@ x10 = x10(:,2);
 Cortante = x1 + x4 + x7 + x10;
 Cortante = -Cortante;
 
-cd('C:\Users\Jose German\Documents\Codigos\Opensees\Tarea03\Modelo\SpaceFrame\Displacement');
+cd('..\Modelo\SpaceFrame\Displacement');
 nodeControl = load('nodesdispContr.out');
 nodeControl = nodeControl(:,2);
 
@@ -37,7 +37,7 @@ title('Curva Pushover');
 grid on;
 
 %% Analisis Cronologico
-cd('C:\Users\Jose German\Documents\Codigos\Opensees\Tarea03\Modelo\SpaceFrame\Reactions');
+cd('..\Modelo\SpaceFrame\Reactions');
 x1 = load('node1reac.out'); 
 x4 = load('node4reac.out');
 x7 = load('node7reac.out'); 
@@ -51,7 +51,7 @@ x10 = x10(:,2);
 Cortante = x1 + x4 + x7 + x10;
 Cortante = -Cortante;
 
-cd('C:\Users\Jose German\Documents\Codigos\Opensees\Tarea03\Modelo\SpaceFrame\Displacement');
+cd('..\Modelo\SpaceFrame\Displacement');
 nodeControl = load('nodesdispContr.out');
 nodeControl = nodeControl(:,2);
 
@@ -61,7 +61,7 @@ xlabel('Desplazamiento en el nodo Control [mm]'); ylabel('Cortante Basal [N]');
 title('Curva de Histeresis (Fuerza - Desplazamiento)');
 grid on;
 
-cd('C:\Users\Jose German\Documents\Codigos\Opensees\Tarea03\Modelo\SpaceFrame\Acceleration');
+cd('..\Modelo\SpaceFrame\Acceleration');
 accNodeControl = load('nodesaccContr.out');
 accNodeControl = accNodeControl(:,2);
 
