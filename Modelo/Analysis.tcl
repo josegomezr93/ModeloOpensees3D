@@ -177,6 +177,21 @@ proc doModal {numModes Outputs} {
 	}
 	close $Periods
 
+	set dxLoc 0;
+	set dyLoc 0;
+	for {set i 1} {$i <= $numModes} {incr i} {
+		set period [format "%.3f" [lindex $T [expr $i - 1]]];
+		set tituloVentana "Modo $i - Periodo: $period sec";
+		recorder display $tituloVentana [expr 10 + $dxLoc] [expr 10 + $dyLoc] 500 500 -wipe;
+		set dxLoc [expr $dxLoc + 150];
+		set dyLoc [expr $dyLoc + 30];
+		vup 0 0 1;
+		vpn 0.25 1 0.25;
+		prp $::h $::h 1;
+		viewWindow -4000 4000 -4000 5000;
+		display -$i 5 500;
+	}
+
 }
 
 #===========================================#
@@ -223,7 +238,7 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 		set ok [StaticAlgoritm $ok $Inf $itern $tol $iter $ConvInf]
 		
 		set itern [expr $itern+1]
-		set currentDisp [nodeDisp $ControlNode $dof]
+		set currentDisp [nodeDisp $ControlNode $dof];
 		
 		if {$Inf != "NoInf"} {
 			puts Step:$itern 
@@ -238,7 +253,9 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 		}
 	}
 	    return $ok
-	    record
+	    record;
+
+
 }	
 
 #===========================================#
