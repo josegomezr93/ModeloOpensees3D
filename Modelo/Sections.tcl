@@ -81,7 +81,7 @@ set nhorz_ala 	4;
 	set Tbz 1;
 	set Tbx 2;
 	set Tcol 3;
-	geomTransf Linear $Tbz 0 -1 0;
+	geomTransf Linear $Tbz 0 0 1;
 	geomTransf Linear $Tbx 1 0 0;
-	geomTransf PDelta $Tcol 0 -1 0;
+	geomTransf PDelta $Tcol 0 0 1;
 	

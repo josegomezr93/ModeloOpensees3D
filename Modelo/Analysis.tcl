@@ -185,7 +185,7 @@ proc doModal {numModes Outputs} {
 		recorder display $tituloVentana [expr 10 + $dxLoc] [expr 10 + $dyLoc] 500 500 -wipe;
 		set dxLoc [expr $dxLoc + 150];
 		set dyLoc [expr $dyLoc + 30];
-		vup 0 0 1;
+		vup 0 1 0;
 		vpn 0.25 1 0.25;
 		prp $::h $::h 1;
 		viewWindow -4000 4000 -4000 5000;
@@ -273,8 +273,8 @@ proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter
 	source "Outputs.tcl";
 	}
 
-	constraints Transformation;
-	#constraints Penalty 1.0e16 1.0e16;	
+	#constraints Transformation;
+	constraints Penalty 1.0e16 1.0e16;	
 	numberer RCM;
 	system UmfPack
 
