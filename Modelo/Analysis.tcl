@@ -96,9 +96,10 @@ proc doStiffnessMatrix {ConvInf Outputs Inf} {
 #		   ANÁLISIS GRAVITATORIO			#
 #===========================================#
 
-proc doForceControl {dF ConvInf tol iter Outputs Inf} {
+proc doForceControl {dF ConvInf tol iter Outputs Inf SwitchAnalisis} {
 # Outputs: nombre de la carpeta Outputs o "NoOutputs" si no se quieren resultados
-	
+if {$SwitchAnalisis == 1} {
+			
 	if {$Inf != "NoInf"} {
 	puts "------------------------------------------------------"
 	puts "STATIC FORCE CONTROL ANALYSIS"
@@ -139,14 +140,17 @@ proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 	loadConst -time 0; # hace que las fuerzs de gravedad se mantengan constantes
     return $ok
     record
+
+    }
 }
 
 #===========================================#
-#		   ANÁLISIS MODAL ESPECTRAL			#
+#		  		 ANÁLISIS MODAL				#
 #===========================================#
 
-proc doModal {numModes Outputs} {
-	
+proc doModal {numModes Outputs SwitchAnalisis} {
+	if {$SwitchAnalisis == 1} {
+		
 	puts "------------------------------------------------------";
 	puts "ANALISIS MODAL ESPECTRAL";
 
@@ -191,16 +195,18 @@ proc doModal {numModes Outputs} {
 		viewWindow -4000 4000 -4000 5000;
 		display -$i 5 500;
 	}
-
+	}
+	
 }
 
 #===========================================#
 #		      ANÁLISIS PUSHOVER				#
 #===========================================#
 	
-proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
+proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf SwitchAnalisis} {
 # Outputs: nombre de la carpeta Outputs o "NoOutputs" si no se quieren resultados
-	
+	if {$SwitchAnalisis == 1} {
+		
 	if {$Inf != "NoInf"} {
 	puts "------------------------------------------------------"
 	puts "STATIC PUSHOVER ANALYSIS"
@@ -210,21 +216,13 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 	source "Outputs.tcl";
 	}
 
-	# variable constraintsTypeStatic Plain;		# default;
-	# if {  [info exists RigidDiaphragm] == 1} {
-	# 	if {$RigidDiaphragm=="ON"} {
-	# 		variable constraintsTypeStatic Lagrange;	#     for large model, try Transformation
-	# 	};	# if rigid diaphragm is on
-	# };	# if rigid diaphragm exists
-	# constraints $constraintsTypeStatic
-	constraints Penalty 1.0e16 1.0e16;
-	#constraints Plain;
-	
-	system FullGeneral
+	#constraints Penalty 1.0e16 1.0e16;
+	constraints Lagrange
+	system UmfPack
 	
 	numberer RCM;
 	
-	integrator DisplacementControl $ControlNode $dof $dU; # 1 $dU $dU; # Control por desplazamientos en Story 1
+	integrator DisplacementControl $ControlNode $dof $dU;
 	test EnergyIncr $tol  $iter $ConvInf
 	algorithm KrylovNewton
 	analysis Static
@@ -255,6 +253,7 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 	    return $ok
 	    record;
 
+	}
 
 }	
 
@@ -262,8 +261,9 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 #		       ANÁLISIS DINÁMICO			#
 #===========================================#
 
-proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter Outputs Inf} {
-
+proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter Outputs Inf SwitchAnalisis} {
+	if {$SwitchAnalisis == 1} {
+		
 	if {$Inf != "NoInf"} {
 		puts "------------------------------------------------------"
 		puts "ANALISIS DINAMICO"
@@ -317,129 +317,134 @@ proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter
 	}
 		
 		return $ok
+	}
 }
 
 #===========================================#
 #  	   	   MODELO DE AMORTIGUAMIENTO	    #
 #===========================================#
 
-proc DampingModel {DampingRatio nEigenI nEigenJ Modelo Inf} {
+proc DampingModel {DampingRatio nEigenI nEigenJ Modelo Inf SwitchAnalisis} {
+
+if {$SwitchAnalisis == 1} {
+
+		if {$Inf != "NoInf"} {
+				puts "------------------------------------------------------"
+				puts "MODELO DE AMORTIGUAMIENTO"
+				puts "Ratio de amortiguamiento: $DampingRatio";	
+			}
 		
-if {$Inf != "NoInf"} {
-		puts "------------------------------------------------------"
-		puts "MODELO DE AMORTIGUAMIENTO"
-		puts "Ratio de amortiguamiento: $DampingRatio";	
-	}
-
-	if {$nEigenJ > 1} {
-	set lambdaN [eigen -genBandArpack $nEigenJ];			# Análisis de autovalores para nEigenJ modos
-	} else {
-	set lambdaN [eigen -fullGenLapack $nEigenJ];			# Análisis de autovalores para nEigenJ modos
-	}
-	
-set lambdaI [lindex $lambdaN [expr $nEigenI-1]]; 			# Autovalores del modo i
-set lambdaJ [lindex $lambdaN [expr $nEigenJ-1]]; 			# Autovalores del modo j
-
-set omegaI [expr pow($lambdaI,0.5)];
-set omegaJ [expr pow($lambdaJ,0.5)];
-
-
-if {$Modelo == "Masa"} {
-	if {$Inf != "NoInf"} {
-		puts "Modelo de amortiguamiento: Masa"
-		puts omegaI:$omegaI
-		puts omegaJ:$omegaJ
-	}
-	set alphaM [expr 2*$DampingRatio*$omegaI];			# Factor aplicado a la matriz de masas, [C1] = [alphaM]*[M]. La matriz de masas se considera invariable en el análisis.
-	set betaKcurr 0.0;                                  # Factor aplicado a la matriz de rigidez actual, [C2] = [betaKactual]*[Kactual]. Sistemas inelásticos: Actualiza la matriz [C] cada vez que varía la rigidez. [Beta] Constante y [K] variable.
-	set betaKinit 0.0;                                  # Factor aplicado a la matriz de rigidez inicial, [C3] = [betaKinicial]*[Kinicial]. Sistemas inelásticos: Actualiza la matriz [C] cada vez que varía la rigidez. [Beta] variable y [K] variable.
-	set betaKcomm 0.0;                                  # Factor aplicado a la matriz de rigidez ultima, [C4] = [betaKultima]*[Kultima]. Sistemas Elásticos. [Beta] constante y [K] constante
-rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 		# Amortiguamiento de Rayleigh, [D] = [C1] + [C2] + [C3] + [C4]  								
-if {$Inf != "NoInf"} {
-		puts alphaM:$alphaM
-	}
-} 
-
-if {$nEigenJ > 1} {
-
-if {$Modelo == "RayleighKinicial"} {
-	
-	if {$Inf != "NoInf"} {
-		puts "Modelo de amortiguamiento: Rayleigh K inicial "
-		puts omegaI:$omegaI
-		puts omegaJ:$omegaJ
-	}
-
-set MpropSwitch 1.0;
-set KcurrSwitch 0.0;
-set KcommSwitch 0.0;
-set KinitSwitch 1.0;
-
-set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	
-set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
-set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   			
-set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
-rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 									
-if {$Inf != "NoInf"} {
-		puts alphaM:$alphaM
-		puts betaKinit:$betaKinit
-	}
-} elseif {$Modelo == "RayleighKultima"} {
-
-	if {$Inf != "NoInf"} {
-		puts "Modelo de amortiguamiento: Rayleigh K ultima"
-		puts omegaI:$omegaI
-		puts omegaJ:$omegaJ
-	}
-
-set MpropSwitch 0.0;
-set KcurrSwitch 0.0;
-set KcommSwitch 1.0;
-set KinitSwitch 0.0;
-
-set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	
-set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
-set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   			
-set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
-rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 									
-if {$Inf != "NoInf"} {
-		puts alphaM:$alphaM
-		puts betaKcomm:$betaKcomm
-	}
-} elseif {$Modelo == "RayleighKactual"} {
-	
-	if {$Inf != "NoInf"} {
-		puts "Modelo de amortiguamiento: Rayleigh K actual"
-		puts omegaI:$omegaI
-		puts omegaJ:$omegaJ
-	}
-	
-set MpropSwitch 1.0;
-set KcurrSwitch 1.0;
-set KcommSwitch 0.0;
-set KinitSwitch 0.0;
-
-set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	
-set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
-set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   			
-set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
-rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 									
-if {$Inf != "NoInf"} {
-		puts alphaM:$alphaM
-		puts betaKcurr:$betaKcurr
-	}
-	
-} elseif {$Modelo == "AmortiguamientoModal"} {
-	
-	if {$Inf != "NoInf"} {
-		puts "Modelo de amortiguamiento: Amortiguamiento modal"
-		puts Modos:$nEigenJ
-	}
-	set lambda [eigen  $nEigenJ];
-	modalDamping $DampingRatio
-
-}
-
+			if {$nEigenJ > 1} {
+			set lambdaN [eigen -genBandArpack $nEigenJ];			# Análisis de autovalores para nEigenJ modos
+			} else {
+			set lambdaN [eigen -fullGenLapack $nEigenJ];			# Análisis de autovalores para nEigenJ modos
+			}
+			
+		set lambdaI [lindex $lambdaN [expr $nEigenI-1]]; 			# Autovalores del modo i
+		set lambdaJ [lindex $lambdaN [expr $nEigenJ-1]]; 			# Autovalores del modo j
+		
+		set omegaI [expr pow($lambdaI,0.5)];
+		set omegaJ [expr pow($lambdaJ,0.5)];
+		
+		
+		if {$Modelo == "Masa"} {
+			if {$Inf != "NoInf"} {
+				puts "Modelo de amortiguamiento: Masa"
+				puts omegaI:$omegaI
+				puts omegaJ:$omegaJ
+			}
+			set alphaM [expr 2*$DampingRatio*$omegaI];			# Factor aplicado a la matriz de masas, [C1] = [alphaM]*[M]. La matriz de masas se considera invariable en el análisis.
+			set betaKcurr 0.0;                                  # Factor aplicado a la matriz de rigidez actual, [C2] = [betaKactual]*[Kactual]. Sistemas inelásticos: Actualiza la matriz [C] cada vez que varía la rigidez. [Beta] Constante y [K] variable.
+			set betaKinit 0.0;                                  # Factor aplicado a la matriz de rigidez inicial, [C3] = [betaKinicial]*[Kinicial]. Sistemas inelásticos: Actualiza la matriz [C] cada vez que varía la rigidez. [Beta] variable y [K] variable.
+			set betaKcomm 0.0;                                  # Factor aplicado a la matriz de rigidez ultima, [C4] = [betaKultima]*[Kultima]. Sistemas Elásticos. [Beta] constante y [K] constante
+		rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 		# Amortiguamiento de Rayleigh, [D] = [C1] + [C2] + [C3] + [C4]  								
+		if {$Inf != "NoInf"} {
+				puts alphaM:$alphaM
+			}
+		} 
+		
+		if {$nEigenJ > 1} {
+		
+		if {$Modelo == "RayleighKinicial"} {
+			
+			if {$Inf != "NoInf"} {
+				puts "Modelo de amortiguamiento: Rayleigh K inicial "
+				puts omegaI:$omegaI
+				puts omegaJ:$omegaJ
+			}
+		
+		set MpropSwitch 1.0;
+		set KcurrSwitch 0.0;
+		set KcommSwitch 0.0;
+		set KinitSwitch 1.0;
+		
+		set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	
+		set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+		set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   			
+		set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+		rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 									
+		if {$Inf != "NoInf"} {
+				puts alphaM:$alphaM
+				puts betaKinit:$betaKinit
+			}
+		} elseif {$Modelo == "RayleighKultima"} {
+		
+			if {$Inf != "NoInf"} {
+				puts "Modelo de amortiguamiento: Rayleigh K ultima"
+				puts omegaI:$omegaI
+				puts omegaJ:$omegaJ
+			}
+		
+		set MpropSwitch 0.0;
+		set KcurrSwitch 0.0;
+		set KcommSwitch 1.0;
+		set KinitSwitch 0.0;
+		
+		set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	
+		set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+		set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   			
+		set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+		rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 									
+		if {$Inf != "NoInf"} {
+				puts alphaM:$alphaM
+				puts betaKcomm:$betaKcomm
+			}
+		} elseif {$Modelo == "RayleighKactual"} {
+			
+			if {$Inf != "NoInf"} {
+				puts "Modelo de amortiguamiento: Rayleigh K actual"
+				puts omegaI:$omegaI
+				puts omegaJ:$omegaJ
+			}
+			
+		set MpropSwitch 1.0;
+		set KcurrSwitch 1.0;
+		set KcommSwitch 0.0;
+		set KinitSwitch 0.0;
+		
+		set alphaM [expr $MpropSwitch*$DampingRatio*(2*$omegaI*$omegaJ)/($omegaI+$omegaJ)];	
+		set betaKcurr [expr $KcurrSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+		set betaKcomm [expr $KcommSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];   			
+		set betaKinit [expr $KinitSwitch*2.*$DampingRatio/($omegaI+$omegaJ)];         		
+		rayleigh $alphaM $betaKcurr $betaKinit $betaKcomm; 									
+		if {$Inf != "NoInf"} {
+				puts alphaM:$alphaM
+				puts betaKcurr:$betaKcurr
+			}
+			
+		} elseif {$Modelo == "AmortiguamientoModal"} {
+			
+			if {$Inf != "NoInf"} {
+				puts "Modelo de amortiguamiento: Amortiguamiento modal"
+				puts Modos:$nEigenJ
+			}
+			set lambda [eigen  $nEigenJ];
+			modalDamping $DampingRatio
+		
+		}
+		
+			}
+		
 	}
 
 }
