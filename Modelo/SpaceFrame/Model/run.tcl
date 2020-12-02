@@ -19,21 +19,17 @@ file copy -force "Outputs.tcl" $SimulationName/Model
 file copy -force "Analysis.tcl" $SimulationName/Model 	
 file copy -force "ReadVector.tcl" $SimulationName/Model 
 	
-# PROCEDURES USED
+# LIBRERIAS BASICAS DEL MODELO
 source Analysis.tcl;
 source ReadVector.tcl;
-
-# MATERIAL LIBRERIES:
 source Materials.tcl;
-
-# SECTION LIBRERIES:
-source Sections.tcl;
-puts WSv1:$WySv1;
-set Qy [expr $WySv1 * $ASv1];
-puts q:$Qy;
-	
-# MODEL
+source Sections.tcl;	
 source Model.tcl;
+
+set SwitchAnalisisGravitario 1;
+set SwitchAnalisisPushover 0;
+set SwitchAnalisisModal 0;
+set SwitchAnalisisDinamico 1;
 
 # OUTPUTS
 set Outputs $SimulationName;
@@ -44,15 +40,18 @@ source Analysis.tcl;
 
 #ANALISIS MODAL
 wipeAnalysis;
-set SwitchAnalisis 0;
+set SwitchAnalisis $SwitchAnalisisModal;
+	if {$SwitchAnalisis == 1} {
 	set GDL 2;
 	set niveles 2;
 	set numModes [expr $niveles * $GDL];
 	
-	doModal $numModes $Outputs $SwitchAnalisis;
+	doModal $numModes $Outputs;
+	}
 
 #ANALISIS GRAVITATORIO
-set SwitchAnalisis 1;
+set SwitchAnalisis $SwitchAnalisisGravitario;
+	if {$SwitchAnalisis == 1} {
 	wipeAnalysis;
 	set SwitchAnalisis 1;
 	set dF 0.20;
@@ -91,12 +90,13 @@ set SwitchAnalisis 1;
 	
 	}
 	
-	doForceControl $dF $ConvInf $tol $iter $Outputs Inf $SwitchAnalisis;
+	doForceControl $dF $ConvInf $tol $iter $Outputs Inf;
+	}
 
 #Analisis Pushover
-set SwitchAnalisis 1;
-	wipeAnalysis;
-	set SwitchAnalisis 1;
+wipeAnalysis;
+set SwitchAnalisis $SwitchAnalisisPushover;
+	if {$SwitchAnalisis == 1} {
 	set maxU 260.0;
 	set numPasos 100;
 	set dU [expr $maxU / $numPasos];
@@ -112,14 +112,14 @@ set SwitchAnalisis 1;
 		sp 13 1 [expr $dU / 2];
 	}
 	
-	doPushover $maxU $dU $ControlNode $dof $ConvInf $tol $iter $Outputs Inf $SwitchAnalisis;
+	doPushover $maxU $dU $ControlNode $dof $ConvInf $tol $iter $Outputs Inf;
+	}
 
 #ANÁLISIS DINÁMICO EN EL DOMINIO DEL TIEMPO:
 wipeAnalysis
-set SwitchAnalisis 0;
+set SwitchAnalisis $SwitchAnalisisDinamico;
 	if {$SwitchAnalisis == 1} {
 			
-	
 		# PROPIEDADES DE AMORTIGUAMIENTO
 		set DampingRatio 0.05;
 		set ::nEigenI 1;
@@ -131,7 +131,7 @@ set SwitchAnalisis 0;
 		#set ::Modelo "AmortiguamientoModal";
 		# El modelo de amortiguamiento puede ser "Masa", 	"RayleighKinicial", la 	"RayleighKultima", la 	"RayleighKactual" o "AmortiguamientoModal" 
 		
-		DampingModel $DampingRatio $nEigenI $nEigenJ $Modelo $Inf $	SwitchAnalisis;
+		DampingModel $DampingRatio $nEigenI $nEigenJ $Modelo $Inf;
 		
 		# LECTURA DE TERREMOTO
 		set NombreTerremoto	"Calitri_f200HzDirX"; # Nombre del terremoto 	sin extensión.
@@ -149,7 +149,7 @@ set SwitchAnalisis 0;
 		set FactorEscala_g [expr $g*$FactorEscala]; # Al factor de escala 	se le introduce el 	valor de la fuerza gravitatoria para 	optener los resustados en acceleraciones y no 	en función de "g".
 		set accelSeries "Series -dt $dt -filePath $ArchivoTerremoto 	-factor  $FactorEscala_g"	;  # Definimos el acelerograma 	que viene con datos en función de g.	
 		set Cod_Terremoto 3; # Etiquetamos el terremoto introducido
-		pattern UniformExcitation $Cod_Terremoto $Direccion_Terr -accel $	accelSeries; 						# Definimos la aplicación 	de la acción sísmica.
+		pattern UniformExcitation $Cod_Terremoto $Direccion_Terr -accel $accelSeries; 						# Definimos la aplicación 	de la acción sísmica.
 		
 		# ANÁLISIS DINÁMICO
 		wipeAnalysis;		# Para limpiar todas las restricciones y 	parámetros definidos en 	análisis anteriores.
@@ -168,8 +168,8 @@ set SwitchAnalisis 0;
 		set gamma 0.5;								# Factor Gamma para 	el integrador 	Newmark (Método aceleración media = 0.5 ; Método 	aceleración lineal = 0.5).
 		set beta 0.25;								# Factor Beta para el 	integrador Newmark 	(Método aceleración media = 0.25 ; Método 	aceleración lineal = 0.5).
 		
-		doDynamic $PasoAnalisis $dtAnalisis $TmaxAnalisis $gamma $beta $	ConvInf $tol $iter $	Outputs Inf $SwitchAnalisis	
-		}	
+		doDynamic $PasoAnalisis $dtAnalisis $TmaxAnalisis $gamma $beta $ConvInf $tol $iter $Outputs Inf	
+		}
 
 # ####Matriz de Rigidez y de Masas#####
 # ##Matriz de Masas##

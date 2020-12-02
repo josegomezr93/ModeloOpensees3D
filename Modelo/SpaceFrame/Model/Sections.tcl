@@ -51,15 +51,15 @@ set ala	15.0;
 set halma [expr $h-2*$ala];
 
 #Calculo ejes referencias
-set y1 [expr -$h/2];
-set y2 [expr -$halma/2];
-set y3 [expr  $halma/2];
-set y4 [expr  $h/2];
+set ::y1 [expr -$h/2];
+set ::y2 [expr -$halma/2];
+set ::y3 [expr  $halma/2];
+set ::y4 [expr  $h/2];
 
-set z1 [expr -$b/2];
-set z2 [expr -$alma/2];
-set z3 [expr  $alma/2];
-set z4 [expr  $b/2];
+set ::z1 [expr -$b/2];
+set ::z2 [expr -$alma/2];
+set ::z3 [expr  $alma/2];
+set ::z4 [expr  $b/2];
 
 # DEFINIR EL NÚMERO DE FIBRAS EN CADA DIRECCIÓN
 set nvert_alma	4;
@@ -69,7 +69,7 @@ set nhorz_ala 	4;
 
 #section Fiber 	$secTag	$numSubdivY $numSubdivZ [y,x Inf-izda I] [y,x Inf-dcha J] [y,x Sup-dcha K] [y,x Sup-izda L]
 #El recorrido de la malla debe ser antihorario
- set Sv2fibra [expr $Sv2-100]
+ set ::Sv2fibra [expr $Sv2-100]
  section Fiber $Sv2fibra -GJ [expr $Gs*$ItSv2] {
  patch quad $::Acero $nhorz_ala $nvert_ala 	$y1  $z4 	$y1  $z1 	$y2  $z1 	$y2  $z4; 	
  patch quad $::Acero $nhorz_alma $nvert_alma 	$y2  $z3 	$y2  $z2 	$y3  $z2 	$y3  $z3;
