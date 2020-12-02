@@ -1,11 +1,11 @@
-proc ReadVector {filename Data nPts} {
-
-		upvar $Data THData
-		upvar $nPts StepN
+proc ReadVector {filename} {
 		
-		set THFileName $filename
-		set fp [open "$THFileName" r]
-		set THData [split [read $fp] "\n"]
-		set StepN [llength $THData] 
-		close $fp
+		global StepN 
+
+		set THFileName "$filename";
+		set fp [open "$THFileName" r];
+		set THData [split [read $fp] "\n"];
+		set StepN [llength $THData] ;
+		close $fp;
+		return $StepN;
 }

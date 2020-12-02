@@ -116,9 +116,9 @@ proc doModal {numModes Outputs} {
 
 	file mkdir $Outputs/Modos;
 
-	constraints Plain;
-	system UmfPack;
-	numberer Plain;
+	# constraints Transformation;
+	# system UmfPack;
+	# numberer Plain;
 
 	set lambda [eigen -fullGenLapack $numModes];
 	# set lambda [eigen -genBandArpack $numModes];
@@ -142,20 +142,20 @@ proc doModal {numModes Outputs} {
 	}
 	close $Periods
 
-	set dxLoc 0;
-	set dyLoc 0;
-	for {set i 1} {$i <= $numModes} {incr i} {
-		set period [format "%.3f" [lindex $T [expr $i - 1]]];
-		set tituloVentana "Modo $i - Periodo: $period sec";
-		recorder display $tituloVentana [expr 10 + $dxLoc] [expr 10 + $dyLoc] 500 500 -wipe;
-		set dxLoc [expr $dxLoc + 150];
-		set dyLoc [expr $dyLoc + 30];
-		vup 0 1 0;
-		vpn 0.25 1 0.25;
-		prp $::h $::h 1;
-		viewWindow -4000 4000 -4000 5000;
-		display -$i 5 500;
-	}
+	# # set dxLoc 0;
+	# # set dyLoc 0;
+	# # for {set i 1} {$i <= $numModes} {incr i} {
+	# # 	set period [format "%.3f" [lindex $T [expr $i - 1]]];
+	# # 	set tituloVentana "Modo $i - Periodo: $period sec";
+	# # 	recorder display $tituloVentana [expr 10 + $dxLoc] [expr 10 + $dyLoc] 500 500 -wipe;
+	# # 	set dxLoc [expr $dxLoc + 150];
+	# # 	set dyLoc [expr $dyLoc + 30];
+	# # 	vup 0 1 0;
+	# # 	vpn 0.25 1 0.25;
+	# # 	prp $::h $::h 1;
+	# # 	viewWindow -4000 4000 -4000 5000;
+	# # 	display -$i 5 500;
+	# }
 	
 }
 

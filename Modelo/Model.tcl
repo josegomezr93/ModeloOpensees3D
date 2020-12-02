@@ -18,23 +18,23 @@
 			fix 10 1 1 1 1 1 1;
 
 		#equalDof nodes: GDL Globales
-			equalDOF 15 2 1 2 3 4 5; #No se condiciona la direc 6, ya que es la direccion en la que trabajara la rotula
-			equalDOF 16 5 1 2 3 4 5;
-			equalDOF 17 6 1 2 3 5 6; #No se condiciona la direc 4, ya que es la direccion en la que trabajara la rotula
-			equalDOF 18 8 1 2 3 5 6;
-			equalDOF 19 8 1 2 3 4 5;
-			equalDOF 20 11 1 2 3 4 5;
-			equalDOF 21 11 1 2 3 5 6;
-			equalDOF 22 2 1 2 3 5 6;
+			equalDOF 2 15 1 2 3 4 5; #No se condiciona la direc 6, ya que es la direccion en la que trabajara la rotula
+			equalDOF 5 16 1 2 3 4 5;
+			equalDOF 6 17 1 2 3 5 6; #No se condiciona la direc 4, ya que es la direccion en la que trabajara la rotula
+			equalDOF 8 18 1 2 3 5 6;
+			equalDOF 8 19 1 2 3 4 5;
+			equalDOF 11 20 1 2 3 4 5;
+			equalDOF 11 21 1 2 3 5 6;
+			equalDOF 2 22 1 2 3 5 6;
 
-			equalDOF 23 3 1 2 3 4 5;
-			equalDOF 24 6 1 2 3 4 5;
-			equalDOF 25 6 1 2 3 5 6;
-			equalDOF 26 9 1 2 3 5 6;
-			equalDOF 27 9 1 2 3 4 5;
-			equalDOF 28 12 1 2 3 4 5;
-			equalDOF 29 12 1 2 3 5 6;
-			equalDOF 30 3 30 1 2 3 5 6;
+			equalDOF 3 23 1 2 3 4 5;
+			equalDOF 6 24 1 2 3 4 5;
+			equalDOF 6 25 1 2 3 5 6;
+			equalDOF 9 26 1 2 3 5 6;
+			equalDOF 9 27 1 2 3 4 5;
+			equalDOF 12 28 1 2 3 4 5;
+			equalDOF 12 29 1 2 3 5 6;
+			equalDOF 3 30 1 2 3 5 6;
 			
 		#rigidDiaphragm $perpDirn $rNodeTag $cNodeTag1 $cNodeTag2 ...
 			rigidDiaphragm 2 13 2 5 8 11;
