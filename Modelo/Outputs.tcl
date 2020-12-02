@@ -19,6 +19,8 @@ recorder Node -file $Outputs/Reactions/node1reac.out -time -node 1 -dof 1 2 3 4 
 recorder Node -file $Outputs/Reactions/node4reac.out -time  -node 4 -dof 1 2 3 4 5 6 reaction
 recorder Node -file $Outputs/Reactions/node7reac.out -time -node 7 -dof 1 2 3 4 5 6 reaction
 recorder Node -file $Outputs/Reactions/node10reac.out -time  -node 10 -dof 1 2 3 4 5 6 reaction
+
+
 	
 # 	# Section Forces
 # 	file mkdir $Outputs/SectionForce
