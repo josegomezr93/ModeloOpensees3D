@@ -112,15 +112,16 @@ proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 
 proc doModal {numModes Outputs} {
 	puts "------------------------------------------------------";
-	puts "ANALISIS MODAL ESPECTRAL";
+	puts "ANALISIS MODAL";
 
 	file mkdir $Outputs/Modos;
 
-	constraints Transformation;
+	constraints Plain;
 	system FullGeneral;
 	numberer Plain;
-	
+
 	set lambda [eigen -fullGenLapack $numModes];
+	# set lambda [eigen -genBandArpack $numModes];
 	set omega {}
 	set f {}
 	set T {}
