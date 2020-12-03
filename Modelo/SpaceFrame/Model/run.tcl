@@ -125,7 +125,7 @@ set SwitchAnalisis $SwitchDinamico;
 		wipeAnalysis
 					
 		# PROPIEDADES DE AMORTIGUAMIENTO
-		set DampingRatio 0.05;
+		set DampingRatio 0.02;
 		set ::nEigenI 1;
 		set ::nEigenJ 2;
 		set Inf Inf;
@@ -138,23 +138,20 @@ set SwitchAnalisis $SwitchDinamico;
 		DampingModel $DampingRatio $nEigenI $nEigenJ $Modelo $Inf;
 		
 		# LECTURA DE TERREMOTO
-		set NombreTerremoto	"Calitri_f200HzDirX"; # Nombre del terremoto 	sin 	extensión.
-		set ArchivoTerremoto "$NombreTerremoto.txt" ; # Indicamos la ruta 	y añadimos 			extensión.
-		set fp [open "$ArchivoTerremoto" r]; # Abre el archivo del 	terremoto.
-		set Datos [split [read $fp] "\n"]; # Genera un índice con la 	posición de 	cada 	dato. 	Indice de longitud n datos.
-		set nPts [llength $Datos] ;	# Lee la posición del último dato del 	archivo 	que 		contiene los índices.
-		close $fp
-			
-		set Direccion_Terr 1;	# Determinamos dirección del terremeto en 		coordenadas 		globales (1 = X ; 2 = Y ; 3 = Z).
+		set ArchivoTerremoto "Calitri_f200HzDirX.txt";
+		ReadVector $ArchivoTerremoto
+
+		set nPts $StepN; #Numero de puntos del registro
+		set Direccion_Terr 1;
 		set FactorEscala 1.0;	# Determinamos el factor de escala (si 	tenemos dos 			terremotos podemos combinar el 100% de uno con el 	30% del otro).
-		set Frecuencia	200;	# Frecuencia del registro de datos del 	terremoto 		introducido.
-		set ::dt [expr 1.0/$Frecuencia];	# Paso del tiempo de los 	datos del 	archivo 	del 	terremoto.
+		set Frecuencia	200;
+		set ::dt [expr 1.0/$Frecuencia];
 		
 		set FactorEscala_g [expr $g*$FactorEscala]; # Al factor de escala 	se le 		introduce el 	valor de la fuerza gravitatoria para 	optener los resustados 	en 	acceleraciones y no 	en función de "g".
-		set accelSeries "Series -dt $dt -filePath $ArchivoTerremoto -factor  $FactorEscala_g"	;  # Definimos el acelerograma 	que viene con datos en 		función de g.	
+		set accelSeries 3;
 		set Cod_Terremoto 3; # Etiquetamos el terremoto introducido
-		pattern UniformExcitation $Cod_Terremoto $Direccion_Terr -accel $accelSeries; 								# Definimos la aplicación 	de la acción sísmica.
-		
+		timeSeries Path $accelSeries -dt $dt -filePath $ArchivoTerremoto -factor $FactorEscala_g;
+		pattern UniformExcitation $Cod_Terremoto $Direccion_Terr -accel $accelSeries; 								
 		# ANÁLISIS DINÁMICO
 		wipeAnalysis;		# Para limpiar todas las restricciones y 	parámetros 		definidos en 	análisis anteriores.
 		set ConvInf 1;		# Opciones de impresión de las iteraciones 	del test: 

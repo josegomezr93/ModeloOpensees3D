@@ -125,7 +125,7 @@ set SwitchAnalisis $SwitchDinamico;
 		wipeAnalysis
 					
 		# PROPIEDADES DE AMORTIGUAMIENTO
-		set DampingRatio 0.05;
+		set DampingRatio 0.02;
 		set ::nEigenI 1;
 		set ::nEigenJ 2;
 		set Inf Inf;
