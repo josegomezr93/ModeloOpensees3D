@@ -16,6 +16,7 @@ element elasticBeamColumn 	14 	25	26 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$
 element elasticBeamColumn 	15 	28	27 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbz;
 element elasticBeamColumn 	16 	30	29 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbx;
 
+#element zerolength tag nodeR nodeC
 element zeroLength 17 2 15 -mat $::Muelle -dir 6;
 element zeroLength 18 5 16 -mat $::Muelle -dir 6;
 element zeroLength 19 5 17 -mat $::Muelle -dir 4;
@@ -24,6 +25,7 @@ element zeroLength 21 8 19 -mat $::Muelle -dir 6;
 element zeroLength 22 11 20 -mat $::Muelle -dir 6;
 element zeroLength 23 11 21 -mat $::Muelle -dir 4;
 element zeroLength 24 2 22 -mat $::Muelle -dir 4;
+
 element zeroLength 25 3 23 -mat $::Muelle -dir 6;
 element zeroLength 26 6 24 -mat $::Muelle -dir 6;
 element zeroLength 27 6 25 -mat $::Muelle -dir 4;

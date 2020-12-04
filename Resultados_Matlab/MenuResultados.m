@@ -44,175 +44,38 @@ switch choice
     case 3
        cd('..\Modelo\SpaceFrame\Reactions');
        %Depuracion en el nodo 1
-       fichero = fopen('node1reac.out', 'r');
-       i = 1;
-       linea = 1;
-       tline1 = fgetl(fichero);
-       var1 = length(split(string(tline1)));
-       fichero = fopen('node1reac.out','r');
-       
-        while (~feof(fichero))
-            tline = fgetl(fichero);
-            tline = string(tline);
-            tline = split(tline);
-            var = length(tline);
-            try
-                if (var1 == var)
-                    for j = 1:var
-                        datos(i,j) = str2num(tline(j));
-                    end
-                elseif (var == 0)
-                    display(linea);
-                    i = i-1;
-                elseif (var < var1)
-                    display(linea)
-                    i = i-1;
-                end
-                end
-            i = i+1;
-            linea = linea + 1;
-        end
-        tamanio = size(datos);
-        for k = 2: tamanio(1)
-            if datos(k,1) < datos(k-1,1)
-                display(k);
-                datos(k:end) = [];
-            end
-        end
-        x1 = datos(:,2);
+       reac1 = load('node1reac.out');
+       reac4 = load('node4reac.out');
+       reac7 = load('node7reac.out');
+       reac10 = load('node10reac.out');
+       x1 = reac1(:,2);
+       x4 = reac4(:,2);
+       x7 = reac7(:,2);
+       x10 = reac10(:,2);
+       Cortante = x1 + x4 + x7 + x10;
+       Cortante = -Cortante;
         
-        %Nodo 4 reacciones
-        fichero = fopen('node4reac.out', 'r');
-        i = 1;
-        linea = 1;
-        tline1 = fgetl(fichero);
-        var1 = length(split(string(tline1)));
-        fichero = fopen('node4reac.out','r');
-       
-        while (~feof(fichero))
-            tline = fgetl(fichero);
-            tline = string(tline);
-            tline = split(tline);
-            var = length(tline);
-            if (var1 == var)
-                for j = 1:var
-                    datos(i,j) = str2num(tline(j));
-                end
-            elseif (var == 0)
-                display(linea);
-                i = i-1;
-            elseif (var < var1)
-                display(linea)
-                i = i-1;
-            end
-            i = i+1;
-            linea = linea + 1;
-        end
-        tamanio = size(datos);
-        for k = 2: tamanio(1)
-            if datos(k,1) < datos(k-1,1)
-                display(k);
-                datos(k:end) = [];
-            end
-        end
-        x4 = datos(:,2);
-        
-        %Depuracion reaccion en el nodo 7
-        fichero = fopen('node7reac.out', 'r');
-        i = 1;
-        linea = 1;
-        tline1 = fgetl(fichero);
-        var1 = length(split(string(tline1)));
-        fichero = fopen('node7reac.out','r');
-       
-        while (~feof(fichero))
-            tline = fgetl(fichero);
-            tline = string(tline);
-            tline = split(tline);
-            var = length(tline);
-            if (var1 == var)
-                for j = 1:var
-                    datos(i,j) = str2num(tline(j));
-                end
-            elseif (var == 0)
-                display(linea);
-                i = i-1;
-            elseif (var < var1)
-                display(linea)
-                i = i-1;
-            end
-            i = i+1;
-            linea = linea + 1;
-        end
-        tamanio = size(datos);
-        for k = 2: tamanio(1)
-            if datos(k,1) < datos(k-1,1)
-                display(k);
-                datos(k:end) = [];
-            end
-        end
-        x7 = datos(:,2);
-        
-        %Nodo 10
-        fichero = fopen('node10reac.out', 'r');
-        i = 1;
-        linea = 1;
-        tline1 = fgetl(fichero);
-        var1 = length(split(string(tline1)));
-        fichero = fopen('node10reac.out','r');
-       
-        while (~feof(fichero))
-            tline = fgetl(fichero);
-            tline = string(tline);
-            tline = split(tline);
-            var = length(tline);
-            if (var1 == var)
-                for j = 1:var
-                    datos(i,j) = str2num(tline(j));
-                end
-            elseif (var == 0)
-                display(linea);
-                i = i-1;
-            elseif (var < var1)
-                display(linea)
-                i = i-1;
-            end
-            i = i+1;
-            linea = linea + 1;
-        end
-        tamanio = size(datos);
-        for k = 2: tamanio(1)
-            if datos(k,1) < datos(k-1,1)
-                display(k);
-                datos(k:end) = [];
-            end
-        end
-        x10 = datos(:,2);
+       cd('..\');
+       cd('..\SpaceFrame\Displacement');
+       nodeControl = load('nodesdispContr.out');
+       nodeControl = nodeControl(:,2);
 
-        Cortante = x1 + x4 + x7 + x10;
-        Cortante = -Cortante;
-        
-        cd('..\');
-        cd('..\SpaceFrame\Displacement');
-        nodeControl = load('nodesdispContr.out');
-        nodeControl = nodeControl(:,2);
+       figure()
+       plot(nodeControl, Cortante);
+       xlabel('Desplazamiento en el nodo Control [mm]'); ylabel('Cortante Basal [N]');
+       title('Curva de Histeresis (Fuerza - Desplazamiento)');
+       grid on;
 
-        figure()
-        plot(nodeControl, Cortante);
-        xlabel('Desplazamiento en el nodo Control [mm]'); ylabel('Cortante Basal [N]');
-        title('Curva de Histeresis (Fuerza - Desplazamiento)');
-        grid on;
-
-        cd('..\');
-        cd('..\SpaceFrame\Acceleration');
-        accNodeControl = load('nodesaccContr.out');
-        accNodeControl = accNodeControl(:,2);
-
-        figure()
-        plot(accNodeControl,Cortante);
-        xlabel('Aceleraciones [mm/s2]'); ylabel('Cortante Basal');
-        title('Curva de Histeresis (Fuerza - Aceleraciones)');
-        grid on;  
+%        cd('..\');
+%        cd('..\SpaceFrame\Acceleration');
+%        accNodeControl = load('nodesaccContr.out');
+%        accNodeControl = accNodeControl(:,2);
+% 
+%        figure()
+%        plot(accNodeControl,Cortante);
+%        xlabel('Aceleraciones [mm/s2]'); ylabel('Cortante Basal');
+%        title('Curva de Histeresis (Fuerza - Aceleraciones)');
+%        grid on;  
 end
 
 cd('..\..\'); %Me regreso a la carpeta de lectura de datos

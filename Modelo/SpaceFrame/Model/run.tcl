@@ -56,7 +56,6 @@ set SwitchAnalisis $SwitchModal;
 set SwitchAnalisis $SwitchGravitatorio;
 	if {$SwitchAnalisis == 1} {
 		wipeAnalysis;
-		set SwitchAnalisis 1;
 		set dF 0.20;
 		set iter 5;
 		set ConvInf 1;
@@ -143,7 +142,7 @@ set SwitchAnalisis $SwitchDinamico;
 
 		set nPts $StepN; #Numero de puntos del registro
 		set Direccion_Terr 1;
-		set FactorEscala 1.0;	# Determinamos el factor de escala (si 	tenemos dos 			terremotos podemos combinar el 100% de uno con el 	30% del otro).
+		set FactorEscala 5.0;	# Determinamos el factor de escala (si 	tenemos dos 			terremotos podemos combinar el 100% de uno con el 	30% del otro).
 		set Frecuencia	200;
 		set ::dt [expr 1.0/$Frecuencia];
 		
@@ -186,7 +185,7 @@ set SwitchAnalisis $SwitchM;
 set SwitchAnalisis $SwitchK;
 	if {$SwitchAnalisis == 1} {
 		wipeAnalysis
-		set ConvInf 0;
+		set ConvInf 1;
 		doStiffnessMatrix $ConvInf $Outputs Inf
 		printA;
 	}

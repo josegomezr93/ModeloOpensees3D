@@ -18,6 +18,7 @@
 			fix 10 1 1 1 1 1 1;
 
 		#equalDof nodes: GDL Globales
+			#equalDof tag nodeR nodeC
 			equalDOF 2 15 1 2 3 4 5; #No se condiciona la direc 6, ya que es la direccion en la que trabajara la rotula
 			equalDOF 5 16 1 2 3 4 5;
 			equalDOF 6 17 1 2 3 5 6; #No se condiciona la direc 4, ya que es la direccion en la que trabajara la rotula

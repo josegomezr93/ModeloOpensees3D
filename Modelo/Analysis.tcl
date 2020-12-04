@@ -77,8 +77,10 @@ proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 		numberer RCM;
 		system UmfPack;
 		constraints Transformation;
+
+		set typeText EnergyIncr
 		
-		test EnergyIncr $tol $iter $ConvInf
+		test $typeText $tol $iter $ConvInf
 		algorithm KrylovNewton
 		set numSteps [expr int(1.0/$dF)]
 		integrator LoadControl $dF
@@ -90,7 +92,7 @@ proc doForceControl {dF ConvInf tol iter Outputs Inf} {
 		while {$ok == 0 && $itern  < $numSteps} {
 			set ok [analyze 1]; 
 			
-			set ok [StaticAlgoritm $ok $Inf $itern $tol $iter $ConvInf]
+			set ok [StaticAlgoritm $ok $Inf $itern $tol $iter $ConvInf $typeText]
 					
 			set itern [expr $itern+1]
 			# puts Step:$itern 		
@@ -176,12 +178,15 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 
 	constraints Penalty 1.0e16 1.0e16;
 	#constraints Lagrange
-	system UmfPack
-	
+	#constraints Transformation
+	#constraints Plain;
+	system UmfPack;
 	numberer RCM;
+
+	set typeText NormDispIncr
 	
 	integrator DisplacementControl $ControlNode $dof $dU;
-	test EnergyIncr $tol  $iter $ConvInf
+	test $typeText $tol  $iter $ConvInf
 	algorithm KrylovNewton
 	analysis Static
 			
@@ -191,7 +196,7 @@ proc doPushover { maxU dU ControlNode dof ConvInf tol iter Outputs Inf} {
 	while {$ok == 0 && abs($currentDisp) < abs($maxU)} {
 		set ok [analyze 1]; 
 		
-		set ok [StaticAlgoritm $ok $Inf $itern $tol $iter $ConvInf]
+		set ok [StaticAlgoritm $ok $Inf $itern $tol $iter $ConvInf $typeText]
 		
 		set itern [expr $itern+1]
 		set currentDisp [nodeDisp $ControlNode $dof];
@@ -233,7 +238,9 @@ proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter
 	numberer RCM;
 	system UmfPack
 
-	test EnergyIncr $tol $iter $ConvInf;					
+	set typeText EnergyIncr;
+
+	test $typeText $tol $iter $ConvInf;					
 	algorithm KrylovNewton;									
 	integrator Newmark $gamma $beta;						
 	analysis Transient;					
@@ -248,7 +255,7 @@ proc doDynamic {PasoAnalisis dtAnalisis TmaxAnalisis gamma beta ConvInf tol iter
 		set ok [analyze 1 $dtAnalisis];
 		set TiempoControl [getTime];
 				
-		set ok [DynamicAlgoritm $ok $Inf $itern $dtAnalisis $tol $iter $TiempoControl $ConvInf]
+		set ok [DynamicAlgoritm $ok $Inf $itern $dtAnalisis $tol $iter $TiempoControl $ConvInf $typeText]
 		
 			
 		set itern [expr $itern+1]
@@ -407,7 +414,7 @@ proc DampingModel {DampingRatio nEigenI nEigenJ Modelo Inf} {
 #  	   ALGORITMO PARA CÁLCULO ESTÁTICO	    #
 #===========================================#
 
- proc StaticAlgoritm {ok Inf itern tol iter ConvInf} {
+ proc StaticAlgoritm {ok Inf itern tol iter ConvInf typeText} {
 		if {$ok != 0} {
 			if {$Inf != "NoInf"} {
 				puts "Probando NewtonWithLineSearch..."
@@ -423,7 +430,7 @@ proc DampingModel {DampingRatio nEigenI nEigenJ Modelo Inf} {
 			if {$Inf != "NoInf"} {
 				puts "Probando Broyden .." 
 			}
-			test EnergyIncr $tol  $iter $ConvInf;
+			test $typeText $tol  $iter $ConvInf;
 			algorithm Broyden 20
 			set ok [analyze 1]; 
 			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
@@ -434,11 +441,11 @@ proc DampingModel {DampingRatio nEigenI nEigenJ Modelo Inf} {
 			if {$Inf != "NoInf"} {
 				puts "Probando ModifiedNewton con tangente inicial..."
 			}
-			test EnergyIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
+			test $typeText $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
 			algorithm ModifiedNewton –initial;
 			set ok [analyze 1]; 
 			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
-			test EnergyIncr $tol  $iter $ConvInf;
+			test $typeText $tol  $iter $ConvInf;
 			algorithm KrylovNewton;
 		}
 		
@@ -446,11 +453,11 @@ proc DampingModel {DampingRatio nEigenI nEigenJ Modelo Inf} {
 			if {$Inf != "NoInf"} {
 				puts "Probando Newton con la tangente inicial..."
 			}
-			test EnergyIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
+			test $typeText $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
 			algorithm Newton –initial;
 			set ok [analyze 1]; 
 			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
-			test EnergyIncr $tol  $iter $ConvInf;
+			test $typeText $tol  $iter $ConvInf;
 			algorithm KrylovNewton;
 		
 		}
@@ -461,7 +468,7 @@ return $ok
 #  	   ALGORITMO PARA CÁLCULO DINÁMICO	    #
 #===========================================#
 
-proc DynamicAlgoritm {ok Inf itern dtAnalisis tol iter TiempoControl ConvInf} {
+proc DynamicAlgoritm {ok Inf itern dtAnalisis tol iter TiempoControl ConvInf typeText} {
 		
 	if {$ok != 0} {
 			if {$Inf != "NoInf"} {
@@ -470,12 +477,12 @@ proc DynamicAlgoritm {ok Inf itern dtAnalisis tol iter TiempoControl ConvInf} {
 			puts CurrentTime:$TiempoControl
 			}
 			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
+			test $typeText $tol $iter $ConvInf
 			algorithm NewtonLineSearch .8
 			set ok [analyze 1 $dtAnalisis]; 
 			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
 			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
+			test $typeText $tol $iter $ConvInf
 			algorithm KrylovNewton;
 		}
 		
@@ -484,12 +491,12 @@ proc DynamicAlgoritm {ok Inf itern dtAnalisis tol iter TiempoControl ConvInf} {
 			puts "Probando Broyden..."
 			}
 			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
+			test $typeText $tol $iter $ConvInf
 			algorithm Broyden 20
 			set ok [analyze 1 $dtAnalisis]; 
 			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
 			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
+			test $typeText $tol $iter $ConvInf
 			algorithm KrylovNewton;
 		}
 		
@@ -498,12 +505,12 @@ proc DynamicAlgoritm {ok Inf itern dtAnalisis tol iter TiempoControl ConvInf} {
 			puts "Probando ModifiedNewton con la tangente inicial..."
 			}
 			# test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
-			test EnergyIncr $tol $iter $ConvInf
+			test $typeText $tol $iter $ConvInf
 			algorithm ModifiedNewton –initial;
 			set ok [analyze 1 $dtAnalisis]; 
 			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
 			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
+			test $typeText $tol $iter $ConvInf
 			algorithm KrylovNewton;
 		}
 		
@@ -512,12 +519,12 @@ proc DynamicAlgoritm {ok Inf itern dtAnalisis tol iter TiempoControl ConvInf} {
 			puts "Probando Newton con la tangente inicial..."
 			}
 			# test NormDispIncr $tol $iter $ConvInf; # if the analysis fails try initial tangent iteration
-			test EnergyIncr $tol $iter $ConvInf
+			test $typeText $tol $iter $ConvInf
 			algorithm Newton –initial;
 			set ok [analyze 1 $dtAnalisis]; 
 			if {$ok == 0} {puts "Ha funcionado... vuelta al KrylovNewton"}
 			# test NormDispIncr $tol  $iter $ConvInf;
-			test EnergyIncr $tol $iter $ConvInf
+			test $typeText $tol $iter $ConvInf
 			algorithm KrylovNewton;
 		}	
 		

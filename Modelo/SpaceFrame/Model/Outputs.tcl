@@ -34,7 +34,7 @@ recorder Element -file $Outputs/Beams/ele1gp1deform.out -time -ele 1 section 1 d
 
 #Rotulas Plasticas
 file mkdir $Outputs/Rotulas;
-recorder Element -file $Outputs/Rotulas/rotula1f.out -time -region 1 section 1 fiber 0.10 0.10 stressStrain;
+recorder Element -file $Outputs/Rotulas/rotula1f.out -time -region 1 section fiber 0.10 0.10 stressStrain;
 recorder Element -file $Outputs/Rotulas/rotula1force.out -time -region 1 force;
 recorder Element -file $Outputs/Rotulas/rotula1def.out -time -region 1 deformation;
 
