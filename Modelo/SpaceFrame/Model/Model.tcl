@@ -88,6 +88,7 @@
 	# REGIONES
 	#region $regTag <-ele ($ele1 $ele2 ...)> <-eleOnly ($ele1 $ele2 ...)> <-eleRange $startEle $endEle> <-eleOnlyRange $startEle $endEle> <-node ($node1 $node2 ...)> <-nodeOnly ($node1 $node2 ...)> <-nodeRange $startNode $endNode> <-nodeOnlyRange $startNode $endNode> <-node all> <-rayleigh $alphaM $betaK $betaKinit $betaKcomm>
 	
-	region 1 -eleRange 17 24;
-	region 2 -eleRange 25 32;
-		
+	region 1 -ele 17 18 21 22; #RotulasYZ de la primera planta
+	region 2 -ele 19 20 23 24; #RotulasXZ de la primera planta
+	region 3 -ele 25 26 29 30; #RotulasYZ de la segunda planta
+	region 4 -ele 27 28 31 32; #RotulasXZ de la segunda planta

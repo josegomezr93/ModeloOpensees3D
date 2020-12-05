@@ -34,9 +34,9 @@ source Outputs.tcl;
 # ANALYSIS
 source Analysis.tcl;
 set SwitchModal 1;
-set SwitchGravitatorio 1;
+set SwitchGravitatorio 0;
 set SwitchPushover 0;
-set SwitchDinamico 1;
+set SwitchDinamico 0;
 set SwitchK 0;
 set SwitchM 0;
 
@@ -98,6 +98,7 @@ set SwitchAnalisis $SwitchGravitatorio;
 #Analisis Pushover
 set SwitchAnalisis $SwitchPushover;
 	if {$SwitchAnalisis == 1} {
+		remove recorders;
 		wipeAnalysis;
 		set maxU 260.0;
 		set numPasos 100;
@@ -121,12 +122,13 @@ set SwitchAnalisis $SwitchPushover;
 #ANÁLISIS DINÁMICO EN EL DOMINIO DEL TIEMPO:
 set SwitchAnalisis $SwitchDinamico;
 	if {$SwitchAnalisis == 1} {
+		remove recorders;
 		wipeAnalysis
 					
 		# PROPIEDADES DE AMORTIGUAMIENTO
-		set DampingRatio 0.02;
+		set DampingRatio 0.05;
 		set ::nEigenI 1;
-		set ::nEigenJ 2;
+		set ::nEigenJ 3;
 		set Inf Inf;
 		set ::Modelo "RayleighKactual";		
 		#set ::Modelo "RayleighKinicial";
@@ -142,7 +144,7 @@ set SwitchAnalisis $SwitchDinamico;
 
 		set nPts $StepN; #Numero de puntos del registro
 		set Direccion_Terr 1;
-		set FactorEscala 5.0;	# Determinamos el factor de escala (si 	tenemos dos 			terremotos podemos combinar el 100% de uno con el 	30% del otro).
+		set FactorEscala 1.0;	# Determinamos el factor de escala (si 	tenemos dos 			terremotos podemos combinar el 100% de uno con el 	30% del otro).
 		set Frecuencia	200;
 		set ::dt [expr 1.0/$Frecuencia];
 		
@@ -164,7 +166,7 @@ set SwitchAnalisis $SwitchDinamico;
 		set PasoAnalisis [expr int($TmaxAnalisis/$dtAnalisis)];  # Número 	de pasos 	del 		análisis que no tiene porqué coincidir con la 	frecuencia del 	acelerograma.
 		
 		set tol 1e-5;								# Tolerancia para el 	test de 			convergencia.
-		set iter 200;								# Número de 	iteraciones 	permitidas 	por 	paso.
+		set iter 100;								# Número de 	iteraciones 	permitidas 	por 	paso.
 		set gamma 0.5;								# Factor Gamma para 	el 	integrador 		Newmark (Método aceleración media = 0.5 ; Método 		aceleración lineal = 0.5).
 		set beta 0.25;								# Factor Beta para el 	integrador 		Newmark 	(Método aceleración media = 0.25 ; Método 	aceleración lineal = 	0.5).
 		

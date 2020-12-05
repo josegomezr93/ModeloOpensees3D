@@ -10,10 +10,12 @@ switch choice
         f7 = load('node7reac.out'); 
         f10 = load('node10reac.out');
 
-        fuerzaZ_node1 = f1(:,4);
-        fuerzaZ_node4 = f4(:,4);
-        fuerzaZ_node7 = f7(:,4);
-        fuerzaZ_node10 = f10(:,4);
+        fuerzaY_node1 = f1(:,3);
+        fuerzaY_node4 = f4(:,3);
+        fuerzaY_node7 = f7(:,3);
+        fuerzaY_node10 = f10(:,3);
+        pesoTotal = fuerzaY_node1 + fuerzaY_node7 + fuerzaY_node10;
+        fprintf('Peso total [N]: %.3f\n', pesoTotal(end,1));
         
     case 2
         cd('..\Modelo\SpaceFrame\Reactions');
@@ -42,8 +44,21 @@ switch choice
         grid on;
         
     case 3
-       cd('..\Modelo\SpaceFrame\Reactions');
-       %Depuracion en el nodo 1
+       cd('..\Modelo');
+       registroAcc = load('Calitri_f200HzDirX.txt');
+       nFilas = length(registroAcc);
+       fMuestreo = input('Inserte la frecuencia de muestro del registro de Aceleraciones [Hz]: ');
+       dt = 1/fMuestreo;
+       tiempoFinal = (nFilas*dt) - dt;
+       registroTiempo = [0:dt:tiempoFinal];
+       
+       figure()
+       plot(registroTiempo, registroAcc);
+        xlabel('Tiempo [s]'); ylabel('Aceleraciones [g]');
+       title('Registro del acelerograma');
+       grid on;
+       
+       cd('SpaceFrame\Reactions');
        reac1 = load('node1reac.out');
        reac4 = load('node4reac.out');
        reac7 = load('node7reac.out');
@@ -54,10 +69,13 @@ switch choice
        x10 = reac10(:,2);
        Cortante = x1 + x4 + x7 + x10;
        Cortante = -Cortante;
-        
+       
        cd('..\');
        cd('..\SpaceFrame\Displacement');
        nodeControl = load('nodesdispContr.out');
+       nodedisp14 = load('nodesdisp14.out');
+       tiempo = nodeControl(:,1);
+       nodedisp14 = nodedisp14(:,2);
        nodeControl = nodeControl(:,2);
 
        figure()
@@ -65,17 +83,18 @@ switch choice
        xlabel('Desplazamiento en el nodo Control [mm]'); ylabel('Cortante Basal [N]');
        title('Curva de Histeresis (Fuerza - Desplazamiento)');
        grid on;
-
-%        cd('..\');
-%        cd('..\SpaceFrame\Acceleration');
-%        accNodeControl = load('nodesaccContr.out');
-%        accNodeControl = accNodeControl(:,2);
-% 
-%        figure()
-%        plot(accNodeControl,Cortante);
-%        xlabel('Aceleraciones [mm/s2]'); ylabel('Cortante Basal');
-%        title('Curva de Histeresis (Fuerza - Aceleraciones)');
-%        grid on;  
+       
+       figure()
+       plot(tiempo, nodeControl);
+       xlabel('Tiempo [s]'); ylabel('Desplazamiento en el nodo Control [mm]');
+       title('Desplazamiento del nodo Control (Nodo 3)');
+       grid on;
+       
+       
+       cd('..\');
+       cd('..\SpaceFrame\Acceleration');
+       accNodeControl = load('nodesaccContr.out');
+       accNodeControl = accNodeControl(:,2);
 end
 
 cd('..\..\'); %Me regreso a la carpeta de lectura de datos

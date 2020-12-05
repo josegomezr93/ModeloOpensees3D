@@ -144,19 +144,24 @@ proc doModal {numModes Outputs} {
 	}
 	close $Periods
 
-	# # set dxLoc 0;
-	# # set dyLoc 0;
-	# # for {set i 1} {$i <= $numModes} {incr i} {
-	# # 	set period [format "%.3f" [lindex $T [expr $i - 1]]];
-	# # 	set tituloVentana "Modo $i - Periodo: $period sec";
-	# # 	recorder display $tituloVentana [expr 10 + $dxLoc] [expr 10 + $dyLoc] 500 500 -wipe;
-	# # 	set dxLoc [expr $dxLoc + 150];
-	# # 	set dyLoc [expr $dyLoc + 30];
-	# # 	vup 0 1 0;
-	# # 	vpn 0.25 1 0.25;
-	# # 	prp $::h $::h 1;
-	# # 	viewWindow -4000 4000 -4000 5000;
-	# # 	display -$i 5 500;
+	for {set i 1} {$i <= $numModes} {incr i} {
+		set autovectorFichero "$Outputs/Modos/eigen$i.out";
+		recorder Node -file $autovectorFichero -time -node 1 -dof 1 "eigen $i"
+	}
+
+	# set dxLoc 0;
+	# set dyLoc 0;
+	# for {set i 1} {$i <= $numModes} {incr i} {
+	# 	set period [format "%.3f" [lindex $T [expr $i - 1]]];
+	# 	set tituloVentana "Modo $i - Periodo: $period sec";
+	# 	recorder display $tituloVentana [expr 10 + $dxLoc] [expr 10 + $dyLoc] 500 500 -wipe;
+	# 	set dxLoc [expr $dxLoc + 150];
+	# 	set dyLoc [expr $dyLoc + 30];
+	# 	vup 0 1 0;
+	# 	vpn 0.25 0.25 1;
+	# 	prp $::h $::h 1;
+	# 	viewWindow -5000 5000 -5000 5000;
+	# 	display -$i 3 50;
 	# }
 	
 }
@@ -293,11 +298,8 @@ proc DampingModel {DampingRatio nEigenI nEigenJ Modelo Inf} {
 				puts "Ratio de amortiguamiento: $DampingRatio";	
 			}
 		
-			if {$nEigenJ > 1} {
-			set lambdaN [eigen -genBandArpack $nEigenJ];			# Análisis de autovalores para nEigenJ modos
-			} else {
-			set lambdaN [eigen -fullGenLapack $nEigenJ];			# Análisis de autovalores para nEigenJ modos
-			}
+		variable sistemaAnalisis "-fullGenLapack"
+		set lambdaN [eigen $sistemaAnalisis $nEigenJ];
 			
 		set lambdaI [lindex $lambdaN [expr $nEigenI-1]]; 			# Autovalores del modo i
 		set lambdaJ [lindex $lambdaN [expr $nEigenJ-1]]; 			# Autovalores del modo j
@@ -397,7 +399,7 @@ proc DampingModel {DampingRatio nEigenI nEigenJ Modelo Inf} {
 				puts "Modelo de amortiguamiento: Amortiguamiento modal"
 				puts Modos:$nEigenJ
 			}
-			set lambda [eigen  $nEigenJ];
+			set lambda [eigen $sistemaAnalisis $nEigenJ];
 			modalDamping $DampingRatio
 		
 		}

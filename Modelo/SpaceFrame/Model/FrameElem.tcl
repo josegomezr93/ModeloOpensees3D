@@ -1,20 +1,20 @@
-element nonlinearBeamColumn 	1 	1 	2 	$np 	$Sv2fibra 	$Tcol;	
-element nonlinearBeamColumn		2 	4 	5 	$np 	$Sv2fibra 	$Tcol;
-element nonlinearBeamColumn 	3 	7 	8 	$np 	$Sv2fibra 	$Tcol;	
-element nonlinearBeamColumn 	4 	10 	11 	$np 	$Sv2fibra 	$Tcol;
-element nonlinearBeamColumn 	5 	2 	3  	$np 	$Sv2fibra 	$Tcol;	
-element nonlinearBeamColumn 	6 	5 	6  	$np 	$Sv2fibra 	$Tcol;
-element nonlinearBeamColumn 	7 	8 	9  	$np 	$Sv2fibra 	$Tcol;	
-element nonlinearBeamColumn 	8 	11 	12  $np 	$Sv2fibra 	$Tcol;
+element nonlinearBeamColumn 	1 	1 	2 	$np 	$Sv2fibra 	$Tcol; # -mass $massSv1;	
+element nonlinearBeamColumn		2 	4 	5 	$np 	$Sv2fibra 	$Tcol; # -mass $massSv1;
+element nonlinearBeamColumn 	3 	7 	8 	$np 	$Sv2fibra 	$Tcol; # -mass $massSv1;	
+element nonlinearBeamColumn 	4 	10 	11 	$np 	$Sv2fibra 	$Tcol; # -mass $massSv1;
+element nonlinearBeamColumn 	5 	2 	3  	$np 	$Sv2fibra 	$Tcol; # -mass $massSv1;	
+element nonlinearBeamColumn 	6 	5 	6  	$np 	$Sv2fibra 	$Tcol; # -mass $massSv1;
+element nonlinearBeamColumn 	7 	8 	9  	$np 	$Sv2fibra 	$Tcol; # -mass $massSv1;	
+element nonlinearBeamColumn 	8 	11 	12  $np 	$Sv2fibra 	$Tcol; # -mass $massSv1;
 
-element elasticBeamColumn 	9 	15	16 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbz;
-element elasticBeamColumn 	10 	17	18 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbx;
-element elasticBeamColumn 	11 	20	19 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbz;
-element elasticBeamColumn 	12 	22	21 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbx;
-element elasticBeamColumn 	13 	23	24 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbz;
-element elasticBeamColumn 	14 	25	26 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbx;
-element elasticBeamColumn 	15 	28	27 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbz;
-element elasticBeamColumn 	16 	30	29 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbx;
+element elasticBeamColumn 	9 	15	16 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbz; # -mass $massSv2;
+element elasticBeamColumn 	10 	17	18 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbx; # -mass $massSv2;
+element elasticBeamColumn 	11 	20	19 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbz; # -mass $massSv2;
+element elasticBeamColumn 	12 	22	21 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbx; # -mass $massSv2;
+element elasticBeamColumn 	13 	23	24 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbz; # -mass $massSv2;
+element elasticBeamColumn 	14 	25	26 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbx; # -mass $massSv2;
+element elasticBeamColumn 	15 	28	27 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbz; # -mass $massSv2;
+element elasticBeamColumn 	16 	30	29 	$ASv1 	$Es 	$Gs 	$ItSv1 	$IySv1 	$IzSv1 	$Tbx; # -mass $massSv2;
 
 #element zerolength tag nodeR nodeC
 element zeroLength 17 2 15 -mat $::Muelle -dir 6;

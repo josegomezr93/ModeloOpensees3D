@@ -4,8 +4,13 @@
 #Displacements
 file mkdir $Outputs/Displacement;
 recorder Node -file $Outputs/Displacement/nodesdispContr.out -time  -node 3 -dof 1  disp;
+recorder Node -file $Outputs/Displacement/nodesdisp14.out -time -node 14 -dof 1 disp;
 recorder Node -file $Outputs/Displacement/nodesdisp13.out -time -node 13 -dof 1 disp;
 # recorder Node -file $Outputs/Displacement/disp10.out    -node 10 -dof 1 2 3 4 5 6  disp; 
+
+# Velocidades
+file mkdir $Outputs/Velocidades;
+recorder Node -file $Outputs/Velocidades/nodesvelContr.out -time -node 3 -dof 1 vel;
 
 # Accelerations
 file mkdir $Outputs/Acceleration;
@@ -24,23 +29,34 @@ recorder Node -file $Outputs/Reactions/node10reac.out -time  -node 10 -dof 1 2 3
 	
 # Section Forces (FIBRA)
 file mkdir $Outputs/SectionForce;
-recorder Element -file $Outputs/SectionForce/ele1sec1fiber.out -time -ele 1 section $::np fiber 0.0 0.0 stressStrain;
-recorder Element -file $Outputs/SectionForce/ele1sec2fiber.out -time -ele 1 section $::np fiber $::y1 $::z4 stressStrain;
+recorder Element -file $Outputs/SectionForce/ele1force.out -time -ele 1 section $::np force;
+recorder Element -file $Outputs/SectionForce/ele1def.out -time -ele 1 section $::np deformation;
+# recorder Element -file $Outputs/SectionForce/ele1sec1fiber.out -time -ele 1 section $::np fiber 0.0 0.0 stressStrain;
+# recorder Element -file $Outputs/SectionForce/ele1sec2fiber.out -time -ele 1 section $::np fiber $::y1 $::z4 stressStrain;
 	
-# Section Forces
+# Section Forces (Vigas)
 file mkdir $Outputs/Beams;
-recorder Element -file $Outputs/Beams/ele1gp1force.out -time -ele 1 section 1 force; 
-recorder Element -file $Outputs/Beams/ele1gp1deform.out -time -ele 1 section 1 deformation;
+set vigasSecciones "$Outputs/Beams";
+for {set i 9} {$i <= 16} {incr i} {
+	set ploteoforce "$vigasSecciones/ele$i";
+	set ploteodef "$vigasSecciones/ele$i";
+	recorder Element -file "$ploteoforce.out" -time -ele $i force;
+	recorder Element -file "$ploteodef.out" -time -ele $i deformation;
+}
+
 
 #Rotulas Plasticas
 file mkdir $Outputs/Rotulas;
-recorder Element -file $Outputs/Rotulas/rotula1f.out -time -region 1 section fiber 0.10 0.10 stressStrain;
-recorder Element -file $Outputs/Rotulas/rotula1force.out -time -region 1 force;
-recorder Element -file $Outputs/Rotulas/rotula1def.out -time -region 1 deformation;
+set regionFinal 4;
+set ficheroNombre $Outputs/Rotulas;
+for {set i 1} {$i <= $regionFinal} {incr i} {
+	set ploteoforce "$ficheroNombre/rotulasforce$i";
+	set ploteodef "$ficheroNombre/rotulasdef$i";
+	recorder Element -file "$ploteoforce.out" -time -region $i force;
+	recorder Element -file "$ploteodef.out" -time -region $i deformation;
+}
 
 
-# Salida de matriz de modos de vibración:	
-# file mkdir $Outputs/Modos
 
 # # Salida de matrices de masas y rigideces:	
 # 	file mkdir $Outputs/Matrices
