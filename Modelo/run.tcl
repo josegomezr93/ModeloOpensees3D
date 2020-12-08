@@ -33,10 +33,10 @@ source Outputs.tcl;
 
 # ANALYSIS
 source Analysis.tcl;
-set SwitchModal 1;
-set SwitchGravitatorio 0;
+set SwitchModal 0;
+set SwitchGravitatorio 1;
 set SwitchPushover 0;
-set SwitchDinamico 0;
+set SwitchDinamico 1;
 set SwitchK 0;
 set SwitchM 0;
 
@@ -144,7 +144,7 @@ set SwitchAnalisis $SwitchDinamico;
 
 		set nPts $StepN; #Numero de puntos del registro
 		set Direccion_Terr 1;
-		set FactorEscala 1.0;	# Determinamos el factor de escala (si 	tenemos dos 			terremotos podemos combinar el 100% de uno con el 	30% del otro).
+		set FactorEscala 5.0;	# Determinamos el factor de escala (si 	tenemos dos 			terremotos podemos combinar el 100% de uno con el 	30% del otro).
 		set Frecuencia	200;
 		set ::dt [expr 1.0/$Frecuencia];
 		

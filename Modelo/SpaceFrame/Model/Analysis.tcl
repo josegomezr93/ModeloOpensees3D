@@ -144,9 +144,48 @@ proc doModal {numModes Outputs} {
 	}
 	close $Periods
 
+	# Obtener los vectores propios
+	#nodeEigenvector $nodeTag $eigenvector <$dof>
 	for {set i 1} {$i <= $numModes} {incr i} {
-		set autovectorFichero "$Outputs/Modos/eigen$i.out";
-		recorder Node -file $autovectorFichero -time -node 1 -dof 1 "eigen $i"
+		if {$i == 1 | $i == 3} {
+
+			set f1 [nodeEigenvector 1 $i 1];
+			set f2 [nodeEigenvector 2 $i 1];
+			set f3 [nodeEigenvector 3 $i 1];
+			set autovector [list [expr {$f1/$f3}] [expr {$f2/$f3}] [expr {$f3/$f3}]];
+			puts "eigenvectorX $i: $autovector";
+		}
+		if {$i == 2 | $i == 4} {
+		
+			set f1 [nodeEigenvector 1 $i 2];
+			set f2 [nodeEigenvector 2 $i 2];
+			set f3 [nodeEigenvector 3 $i 2];
+			set autovector [list [expr {$f1/$f3}] [expr {$f2/$f3}] [expr {$f3/$f3}]];
+			puts "eigenvectorY $i: $autovector";	
+
+		}
+	}
+	
+	#Bloque de codigo para plotear el vector modal i
+	for {set k 1} {$k <= $numModes} {incr k} {
+		if {$k == 1 | $k == 3} {
+			set modo [format "$Outputs/Modos/eigen%i.txt" $k];
+			set nodo1 [nodeEigenvector 1 $k 1];
+			set nodo2 [nodeEigenvector 2 $k 1];
+			set nodo3 [nodeEigenvector 3 $k 1];
+			set Vectors [open $modo "w"]
+			close $Vectors
+		}
+
+		if {$k == 2 | $k == 4} {
+			set modo [format "$Outputs/Modos/eigen%i.txt" $k];
+			set nodo1 [nodeEigenvector 1 $k 2];
+			set nodo2 [nodeEigenvector 2 $k 2];
+			set nodo3 [nodeEigenvector 3 $k 2];
+			set Vectors [open $modo "w"]
+			close $Vectors
+		}
+		
 	}
 
 	# set dxLoc 0;
